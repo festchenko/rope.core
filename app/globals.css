@@ -178,7 +178,6 @@ button:focus-visible {
 
 .status-pill:hover {
   transform: translateY(-2px) scale(1.02);
-  border-color: rgba(0, 191, 166, 0.6);
   box-shadow: 0 4px 15px rgba(0, 191, 166, 0.2);
 }
 

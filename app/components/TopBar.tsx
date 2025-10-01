@@ -13,8 +13,7 @@ export default function TopBar() {
           <span className='text-[0.5em] text-fg'>{'}'}</span>
         </div>
         <div className='flex items-center gap-2 px-4 py-2 rounded-full glass-card relative status-pill cursor-pointer' style={{
-          background: 'transparent',
-          border: '1px solid rgba(0, 191, 166, 0.3)'
+          background: 'transparent'
         }}>
           <div className='particle'></div>
           <div className='particle'></div>
