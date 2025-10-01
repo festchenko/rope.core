@@ -1,28 +1,33 @@
+'use client';
+
 import React from 'react';
+import styled from 'styled-components';
+import { StyledLogo, StyledStatusPill } from './ui';
+
+const Header = styled.header`
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+`;
+
+const HeaderContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+`;
 
 export default function TopBar() {
   return (
-    <header className='sticky top-0 z-50 glass border-b border-border'>
-      <div className='flex items-center justify-between px-4 py-4'>
-        {/* Logo */}
-        <div className='flex items-center'>
-          <h1 className='pixel-logo text-2xl'>
-            <span className='text-fg'>rope</span>
-            <span className='text-accent mx-1'>/</span>
-            <span className='text-fg'>{'{'}</span>
-            <span className='text-accent'>core</span>
-            <span className='text-fg'>{'}'}</span>
-          </h1>
-        </div>
-
-        {/* Status pill */}
-        <div className='flex items-center gap-2 px-4 py-2 rounded-full glass-card border border-border'>
-          <div className='w-2 h-2 rounded-full bg-accent glow-accent'></div>
-          <span className='text-sm text-muted font-inter font-medium'>
-            Demo • Offline
-          </span>
-        </div>
-      </div>
-    </header>
+    <Header>
+      <HeaderContent>
+        <StyledLogo size='md' />
+        <StyledStatusPill status='demo' label='Demo • Offline' />
+      </HeaderContent>
+    </Header>
   );
 }

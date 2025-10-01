@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'LAB-Grotesk';
+  src: url('/fonts/LAB-Grotesk.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #0f0f23;
   --fg: #ffffff;
@@ -56,20 +64,13 @@ body {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* Safe area support for iOS */
-@supports (padding: max(0px)) {
-  .safe-area-bottom {
-    padding-bottom: max(1rem, env(safe-area-inset-bottom));
-  }
-}
-
 /* Focus styles for accessibility */
 button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Custom scrollbar for glassmorphism theme */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -92,19 +93,23 @@ button:focus-visible {
   box-shadow: 0 0 20px var(--accent-glow);
 }
 
+.glow-green {
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+}
+
+.glow-red {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
 .text-glow {
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-/* Pixelated logo effect */
-.pixel-logo {
-  font-family: 'Courier New', monospace;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  text-shadow:
-    2px 2px 0px rgba(0, 0, 0, 0.8),
-    4px 4px 0px rgba(0, 0, 0, 0.6);
-  image-rendering: pixelated;
-  -webkit-font-smoothing: none;
-  -moz-osx-font-smoothing: auto;
+/* Flat logo style */
+.flat-logo {
+  font-family: 'LAB-Grotesk', var(--font-labco), sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
