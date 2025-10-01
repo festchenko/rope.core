@@ -9,12 +9,21 @@ export default function TopBar() {
         <div className='text-xl font-normal tracking-[0.22em] flex items-baseline' style={{ fontFamily: 'LAB-Grotesk, sans-serif' }}>
           rope<span className='text-accent text-[0.5em]'>/</span>
           <span className='text-[0.5em] text-fg'>{'{'}</span>
-          <span className='text-[0.5em] text-accent'>core</span>
+          <span className='text-[0.5em] text-accent animate-pulse'>core</span>
           <span className='text-[0.5em] text-fg'>{'}'}</span>
         </div>
-        <div className='flex items-center gap-2 px-4 py-2 rounded-full glass-card'>
-          <div className='w-2 h-2 rounded-full bg-accent glow-accent'></div>
-          <span className='text-sm text-muted font-inter font-medium'>Demo • Offline</span>
+        <div className='flex items-center gap-2 px-4 py-2 rounded-full glass-card relative status-pill cursor-pointer'>
+          <div className='particle'></div>
+          <div className='particle'></div>
+          <div className='particle'></div>
+          <div className='particle'></div>
+          <div className='relative w-8 h-8 flex items-center justify-center'>
+            <div className='absolute w-2 h-2 rounded-full bg-accent glow-accent'></div>
+            <div className='absolute w-2 h-2 rounded-full water-ripple'></div>
+            <div className='absolute w-2 h-2 rounded-full water-ripple'></div>
+            <div className='absolute w-2 h-2 rounded-full water-ripple'></div>
+          </div>
+          <span className='text-sm font-inter font-medium shimmer-text'>Demo • Offline</span>
         </div>
       </div>
     </header>
