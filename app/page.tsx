@@ -4,9 +4,9 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import TopBar from './components/TopBar';
 
-// Простая 2D версия Digital Twin без framer-motion
-const SimpleDigitalTwin = dynamic(
-  () => import('../components/digital-twin/SimpleDigitalTwinNoMotion'),
+// 3D Digital Twin с Three.js
+const ThreeDigitalTwin = dynamic(
+  () => import('../components/digital-twin/ThreeDigitalTwin'),
   { ssr: false }
 );
 
@@ -15,8 +15,8 @@ export default function Home() {
     <div className='min-h-screen'>
       <TopBar />
 
-      {/* 2D Digital Twin */}
-      <SimpleDigitalTwin />
+      {/* 3D Digital Twin */}
+      <ThreeDigitalTwin />
 
       {/* Placeholder content below */}
       <main className='p-6 pb-24'>
