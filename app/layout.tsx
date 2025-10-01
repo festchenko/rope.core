@@ -1,13 +1,13 @@
 import React from 'react'
 import type { Metadata } from 'next'
+import localFont from 'next/font/local'
 import './globals.css'
 
-// TODO: Подключить шрифт LAB-Grotesk.otf
-// const labco = localFont({
-//   src: '../public/fonts/LAB-Grotesk.otf',
-//   variable: '--font-labco',
-//   display: 'swap',
-// })
+const labco = localFont({
+  src: './fonts/LAB-Grotesk.otf',
+  variable: '--font-labco',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'rope.core - Digital Twin',
@@ -20,8 +20,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className="bg-bg text-fg antialiased font-sans">
+    <html lang="en" className={labco.variable}>
+      <body className={`${labco.className} bg-bg text-fg antialiased`}>
         <div className="max-w-md mx-auto md:max-w-lg min-h-screen">
           {children}
         </div>

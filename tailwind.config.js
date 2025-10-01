@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'labco': ['LABco', 'sans-serif'],
+        'labco': ['var(--font-labco)', 'sans-serif'],
       },
       colors: {
         'bg': '#0B0F12',
