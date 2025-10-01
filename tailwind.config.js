@@ -9,6 +9,7 @@ module.exports = {
     extend: {
       fontFamily: {
         'labco': ['var(--font-labco)', 'sans-serif'],
+        'inter': ['var(--font-inter)', 'sans-serif'],
       },
       colors: {
         'bg': '#0B0F12',

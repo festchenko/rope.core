@@ -12,7 +12,7 @@ export default function Home() {
             <h1 className="text-2xl font-labco font-semibold text-fg mb-2">
               rope.core
             </h1>
-            <p className="text-muted">
+            <p className="text-muted font-inter">
               Digital Twin Interface
             </p>
           </div>
