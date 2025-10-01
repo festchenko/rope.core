@@ -1,46 +1,21 @@
 'use client';
 
 import React from 'react';
-import styled from 'styled-components';
 import TopBar from './components/TopBar';
-
-const PageContainer = styled.div`
-  min-height: 100vh;
-`;
-
-const Main = styled.main`
-  padding: 1.5rem;
-`;
-
-const CenterContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: calc(100vh - 100px);
-`;
-
-const ContentWrapper = styled.div`
-  text-align: center;
-`;
-
-const Subtitle = styled.p`
-  color: var(--muted);
-  font-family: var(--font-inter), sans-serif;
-  font-size: 0.875rem;
-  margin-top: 1rem;
-`;
 
 export default function Home() {
   return (
-    <PageContainer>
+    <div className='min-h-screen'>
       <TopBar />
-      <Main>
-        <CenterContainer>
-          <ContentWrapper>
-            <Subtitle>Digital Twin Interface</Subtitle>
-          </ContentWrapper>
-        </CenterContainer>
-      </Main>
-    </PageContainer>
+      <main className='p-6'>
+        <div className='flex items-center justify-center h-[calc(100vh-100px)]'>
+          <div className='text-center'>
+            <p className='text-muted font-inter text-sm mt-4'>
+              Digital Twin Interface
+            </p>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }

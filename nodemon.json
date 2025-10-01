@@ -1,0 +1,20 @@
+{
+  "watch": [
+    "app",
+    "public",
+    "tailwind.config.js",
+    "postcss.config.js",
+    "next.config.js"
+  ],
+  "ext": "ts,tsx,js,jsx,json,css",
+  "ignore": [
+    "node_modules",
+    ".next",
+    "dist",
+    "build"
+  ],
+  "exec": "next dev --turbo",
+  "env": {
+    "NODE_ENV": "development"
+  }
+}
