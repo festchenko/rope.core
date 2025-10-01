@@ -10,7 +10,6 @@ interface StyledLogoProps {
 
 const LogoContainer = styled.h1<{ size: 'sm' | 'md' | 'lg' }>`
   font-family: 'LAB-Grotesk', var(--font-labco), sans-serif;
-  font-weight: 700;
   letter-spacing: 0.22em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -40,7 +39,7 @@ const RopeText = styled.span`
 const SlashText = styled.span`
   color: var(--accent);
   margin: 0 0.25rem;
-  font-size: 0.5em; /* Такой же размер как у {core} */
+  font-size: 0.5em;
 `;
 
 const CoreText = styled.span`
