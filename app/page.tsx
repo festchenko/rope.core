@@ -4,9 +4,9 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import TopBar from './components/TopBar';
 
-// Простая 2D версия Digital Twin
+// Простая 2D версия Digital Twin без framer-motion
 const SimpleDigitalTwin = dynamic(
-  () => import('../components/digital-twin/SimpleDigitalTwin'),
+  () => import('../components/digital-twin/SimpleDigitalTwinNoMotion'),
   { ssr: false }
 );
 

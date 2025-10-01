@@ -1,44 +1,43 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
-import { useScroll, useTransform } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
 import { SYSTEMS, SystemKey } from '../../lib/systems';
 
-export default function SimpleDigitalTwin() {
-  const containerRef = useRef<HTMLDivElement>(null);
+export default function SimpleDigitalTwinNoMotion() {
   const [isClient, setIsClient] = useState(false);
   const [activeSystem, setActiveSystem] = useState<SystemKey>('energy');
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Используем useScroll
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start start', 'end end'],
-  });
-
-  // Маппинг скролла в поворот от -45° до +45°
-  const rotationY = useTransform(scrollYProgress, [0, 1], [-45, 45]);
-
-  // Определение активной системы на основе прогресса скролла
-  const activeIndex = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [0, SYSTEMS.length - 1]
-  );
-
-  // Обновляем активную систему
   useEffect(() => {
-    const unsubscribe = activeIndex.onChange(value => {
-      const index = Math.round(value);
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const progress = Math.min(scrollTop / docHeight, 1);
+      setScrollProgress(progress);
+
+      // Определение активной системы
+      const systemIndex = Math.round(progress * (SYSTEMS.length - 1));
       const systemKey =
-        SYSTEMS[Math.max(0, Math.min(index, SYSTEMS.length - 1))].key;
+        SYSTEMS[Math.max(0, Math.min(systemIndex, SYSTEMS.length - 1))].key;
       setActiveSystem(systemKey);
-    });
-    return unsubscribe;
-  }, [activeIndex]);
+    };
+
+    if (isClient) {
+      window.addEventListener('scroll', handleScroll);
+      handleScroll(); // Initial call
+    }
+
+    return () => {
+      if (isClient) {
+        window.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [isClient]);
 
   if (!isClient) {
     return (
@@ -51,8 +50,11 @@ export default function SimpleDigitalTwin() {
     );
   }
 
+  // Маппинг скролла в поворот от -45° до +45°
+  const rotationY = -45 + scrollProgress * 90;
+
   return (
-    <div ref={containerRef} className='min-h-[200vh] relative'>
+    <div className='min-h-[200vh] relative'>
       {/* Fixed Canvas - верхняя половина */}
       <div className='sticky top-0 h-screen max-w-md mx-auto'>
         {/* 2D Yacht Representation */}
@@ -61,7 +63,7 @@ export default function SimpleDigitalTwin() {
           <div
             className='transition-transform duration-300 ease-out'
             style={{
-              transform: `rotateY(${rotationY.get()}deg)`,
+              transform: `rotateY(${rotationY}deg)`,
               transformStyle: 'preserve-3d',
             }}
           >
