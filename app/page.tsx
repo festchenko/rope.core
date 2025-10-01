@@ -4,9 +4,9 @@ import React from 'react';
 import dynamic from 'next/dynamic';
 import TopBar from './components/TopBar';
 
-// 3D Digital Twin с Three.js
-const ThreeDigitalTwin = dynamic(
-  () => import('../components/digital-twin/ThreeDigitalTwin'),
+// Простой 3D Digital Twin с CSS 3D
+const Simple3DDigitalTwin = dynamic(
+  () => import('../components/digital-twin/Simple3DDigitalTwin'),
   { ssr: false }
 );
 
@@ -15,8 +15,8 @@ export default function Home() {
     <div className='min-h-screen'>
       <TopBar />
 
-      {/* 3D Digital Twin */}
-      <ThreeDigitalTwin />
+      {/* Простой 3D Digital Twin */}
+      <Simple3DDigitalTwin />
 
       {/* Placeholder content below */}
       <main className='p-6 pb-24'>
