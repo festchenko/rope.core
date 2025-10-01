@@ -3,7 +3,7 @@
 import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
-import { Mesh, Vector3 } from 'three';
+import * as THREE from 'three';
 import type { MotionValue } from 'framer-motion';
 import { SYSTEMS, SystemKey } from '../../lib/systems';
 
@@ -12,8 +12,8 @@ interface HotspotProps {
 }
 
 export default function Hotspot({ activeKey }: HotspotProps) {
-  const meshRef = useRef<Mesh>(null);
-  const glowRef = useRef<Mesh>(null);
+  const meshRef = useRef<THREE.Mesh>(null);
+  const glowRef = useRef<THREE.Mesh>(null);
 
   // Получаем данные активной системы
   const activeSystem = useMemo(() => {
@@ -22,17 +22,21 @@ export default function Hotspot({ activeKey }: HotspotProps) {
 
   // Анимация пульсации
   useFrame(state => {
-    const time = state.clock.getElapsedTime();
+    try {
+      const time = state.clock.getElapsedTime();
 
-    if (meshRef.current) {
-      const scale = 1 + Math.sin(time * 2) * 0.1;
-      meshRef.current.scale.setScalar(scale);
-    }
+      if (meshRef.current) {
+        const scale = 1 + Math.sin(time * 2) * 0.1;
+        meshRef.current.scale.setScalar(scale);
+      }
 
-    if (glowRef.current) {
-      const scale = 1.5 + Math.sin(time * 1.5) * 0.2;
-      glowRef.current.scale.setScalar(scale);
-      glowRef.current.rotation.z = time * 0.5;
+      if (glowRef.current) {
+        const scale = 1.5 + Math.sin(time * 1.5) * 0.2;
+        glowRef.current.scale.setScalar(scale);
+        glowRef.current.rotation.z = time * 0.5;
+      }
+    } catch (error) {
+      console.error('Hotspot animation error:', error);
     }
   });
 

@@ -3,7 +3,7 @@
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-import { Mesh, Group } from 'three';
+import * as THREE from 'three';
 import type { MotionValue } from 'framer-motion';
 
 interface YachtModelProps {
@@ -11,7 +11,7 @@ interface YachtModelProps {
 }
 
 export default function YachtModel({ rotationY }: YachtModelProps) {
-  const groupRef = useRef<Group>(null);
+  const groupRef = useRef<THREE.Group>(null);
 
   // Попытка загрузить GLB модель (пока используем фолбэк)
   // TODO: replace yacht.glb with real asset
@@ -19,8 +19,12 @@ export default function YachtModel({ rotationY }: YachtModelProps) {
 
   // Анимация поворота
   useFrame(() => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y = rotationY.get();
+    try {
+      if (groupRef.current) {
+        groupRef.current.rotation.y = rotationY.get();
+      }
+    } catch (error) {
+      console.error('YachtModel rotation error:', error);
     }
   });
 

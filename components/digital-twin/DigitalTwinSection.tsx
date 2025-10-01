@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useScroll, useTransform } from 'framer-motion';
 import { SYSTEMS, SystemKey } from '../../lib/systems';
 import DigitalTwinCanvas from './DigitalTwinCanvas';
@@ -8,6 +8,11 @@ import SystemChips from './SystemChips';
 
 export default function DigitalTwinSection() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -31,6 +36,18 @@ export default function DigitalTwinSection() {
     const index = Math.round(value);
     return SYSTEMS[Math.max(0, Math.min(index, SYSTEMS.length - 1))].key;
   });
+
+  // Fallback для SSR
+  if (!isClient) {
+    return (
+      <div className='min-h-[200vh] relative'>
+        <div className='sticky top-0 h-screen max-w-md mx-auto flex items-center justify-center'>
+          <div className='text-white/60'>Loading Digital Twin...</div>
+        </div>
+        <div className='h-screen bg-gradient-to-b from-transparent to-black/20' />
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className='min-h-[200vh] relative'>
