@@ -8,17 +8,21 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'labco': ['var(--font-labco)', 'sans-serif'],
-        'inter': ['var(--font-inter)', 'sans-serif'],
+        labco: ['var(--font-labco)', 'sans-serif'],
+        inter: ['var(--font-inter)', 'sans-serif'],
       },
       colors: {
-        'bg': '#0B0F12',
-        'fg': '#E5E7EB',
-        'card': '#111827',
-        'muted': '#9CA3AF',
-        'accent': '#00BFA6',
-      }
+        bg: '#0F0F23',
+        fg: '#FFFFFF',
+        card: 'rgba(255, 255, 255, 0.05)',
+        'card-hover': 'rgba(255, 255, 255, 0.08)',
+        muted: 'rgba(255, 255, 255, 0.6)',
+        accent: '#00BFA6',
+        'accent-glow': 'rgba(0, 191, 166, 0.3)',
+        border: 'rgba(255, 255, 255, 0.1)',
+        shadow: 'rgba(0, 0, 0, 0.1)',
+      },
     },
   },
   plugins: [],
-}
+};
