@@ -6,7 +6,7 @@ import TopBar from './components/TopBar';
 
 export default function Home() {
   return (
-    <div className='h-screen flex flex-col overflow-hidden'>
+    <div className='h-dvh flex flex-col overflow-hidden'>
       <TopBar />
       <div className='flex-1 bg-[#0B0F12] flex items-center justify-center'>
         <div className='text-center text-white'>

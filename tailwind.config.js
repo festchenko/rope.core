@@ -25,6 +25,10 @@ module.exports = {
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
+      height: {
+        'dvh': '100dvh',
+        'screen': '100vh',
+      },
     },
   },
   plugins: [],
