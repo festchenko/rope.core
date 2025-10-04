@@ -28,8 +28,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en' className={`${labco.variable} ${inter.variable}`}>
-      <body className={`${inter.className} text-fg antialiased`}>
-        <div className='min-h-screen'>{children}</div>
+      <body
+        className={`${inter.className} text-fg antialiased h-screen overflow-hidden`}
+      >
+        {children}
       </body>
     </html>
   );
