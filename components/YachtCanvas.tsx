@@ -8,7 +8,7 @@ import * as THREE from 'three';
 
 // -------- Model loader --------
 function YachtModel(props: any) {
-  const { scene } = useGLTF('/models/yaht.glb');
+  const { scene } = useGLTF('/models/yaсht.glb');
   return (
     <group {...props} dispose={null}>
       <primitive object={scene} />
