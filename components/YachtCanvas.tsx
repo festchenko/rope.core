@@ -191,15 +191,15 @@ function YachtScene() {
     if (isSmallMobile) {
       // Very small mobile camera position
       camera.position.set(2, 2, 3);
-      camera.lookAt(0, -1, 0); // Look at yacht hull level
+      camera.lookAt(0, -0.5, 0); // Look at yacht center, slightly below
     } else if (isMobile) {
-      // Mobile camera position - focus on yacht hull level
+      // Mobile camera position - focus on yacht center
       camera.position.set(3, 2.5, 4);
-      camera.lookAt(0, -1, 0); // Look at yacht hull level
+      camera.lookAt(0, -0.5, 0); // Look at yacht center, slightly below
     } else {
-      // Desktop camera position - focus on yacht hull level
+      // Desktop camera position - focus on yacht center
       camera.position.set(5, 3.5, 7);
-      camera.lookAt(0, -1, 0); // Look at yacht hull level
+      camera.lookAt(0, -0.5, 0); // Look at yacht center, slightly below
     }
 
     camera.near = 0.1;
@@ -323,7 +323,7 @@ function YachtScene() {
         maxDistance={window.innerWidth < 768 ? 12 : 20}
         minPolarAngle={Math.PI * 0.1}
         maxPolarAngle={Math.PI * 0.9}
-        target={[0, -1, 0]} // Focus on yacht hull level, lower than center
+        target={[0, -0.5, 0]} // Focus on yacht center, slightly below model center
         makeDefault
       />
     </>
