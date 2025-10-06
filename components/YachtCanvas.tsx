@@ -188,15 +188,21 @@ function YachtScene() {
         </group>
       </Suspense>
 
-      {/* Subtle floor for scale cues */}
-      <mesh
+      {/* Floor removed for cleaner look */}
+      {/* <mesh
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -0.31, 0]}
         receiveShadow
       >
         <circleGeometry args={[8, 64]} />
-        <meshStandardMaterial color='#8f9aa8' metalness={0} roughness={0.9} />
-      </mesh>
+        <meshStandardMaterial 
+          color='#1a1a1a' 
+          metalness={0} 
+          roughness={0.9} 
+          transparent={true}
+          opacity={0.3}
+        />
+      </mesh> */}
 
       {/* Environment lighting */}
       <Environment preset='city' />
