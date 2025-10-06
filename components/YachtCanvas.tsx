@@ -26,16 +26,21 @@ function YachtModel(props: any) {
         console.log('Model size:', size);
         console.log('Model center:', center);
 
-        // Calculate scale to fit in view
-        const maxDimension = Math.max(size.x, size.y, size.z);
+        // Calculate scale to fit in view - focus on hull, not mast
+        const hullSize = Math.max(size.x, size.z); // Use X and Z (hull dimensions), ignore Y (mast height)
         const targetSize = 4; // Target size in world units
-        const scale = targetSize / maxDimension;
+        const scale = targetSize / hullSize;
 
-        console.log('Calculated scale:', scale);
+        console.log('Hull size:', hullSize, 'Calculated scale:', scale);
 
-        // Apply transformations
+        // Apply transformations - center on hull, not mast
         scene.scale.setScalar(scale);
-        scene.position.sub(center.multiplyScalar(scale));
+        // Center the model but keep it at ground level
+        scene.position.set(
+          -center.x * scale,
+          -center.y * scale + 0.5,
+          -center.z * scale
+        );
 
         // Enable shadows
         scene.traverse(child => {
@@ -66,22 +71,29 @@ function YachtModel(props: any) {
         const isMobile = window.innerWidth < 768;
         const targetSize = isMobile ? 2.5 : 4; // Smaller for mobile
 
-        // Calculate scale to fit in view
-        const maxDimension = Math.max(size.x, size.y, size.z);
-        const scale = targetSize / maxDimension;
+        // Calculate scale to fit in view - focus on hull, not mast
+        const hullSize = Math.max(size.x, size.z); // Use X and Z (hull dimensions), ignore Y (mast height)
+        const scale = targetSize / hullSize;
 
         console.log(
           'Mobile:',
           isMobile,
           'Target size:',
           targetSize,
+          'Hull size:',
+          hullSize,
           'Scale:',
           scale
         );
 
-        // Apply transformations
+        // Apply transformations - center on hull, not mast
         scene.scale.setScalar(scale);
-        scene.position.sub(center.multiplyScalar(scale));
+        // Center the model but keep it at ground level
+        scene.position.set(
+          -center.x * scale,
+          -center.y * scale + 0.5,
+          -center.z * scale
+        );
 
         // Enable shadows
         scene.traverse(child => {
@@ -159,12 +171,12 @@ function YachtScene() {
     const isMobile = window.innerWidth < 768;
 
     if (isMobile) {
-      // Mobile camera position - closer and lower
-      camera.position.set(3, 2, 4);
+      // Mobile camera position - focus on hull level
+      camera.position.set(3, 1.5, 4);
       camera.lookAt(0, 0, 0);
     } else {
-      // Desktop camera position
-      camera.position.set(5, 3, 7);
+      // Desktop camera position - focus on hull level
+      camera.position.set(5, 2.5, 7);
       camera.lookAt(0, 0, 0);
     }
 
