@@ -28,17 +28,26 @@ function YachtModel(props: any) {
 
         // Calculate scale to fit in view - focus on hull, not mast
         const hullSize = Math.max(size.x, size.z); // Use X and Z (hull dimensions), ignore Y (mast height)
-        const targetSize = 4; // Target size in world units
+        const isMobile = window.innerWidth < 768;
+        const isSmallMobile = window.innerWidth < 480;
+        let targetSize = 4; // Default desktop
+
+        if (isSmallMobile) {
+          targetSize = 1.2; // Very small for small phones
+        } else if (isMobile) {
+          targetSize = 1.8; // Small for mobile
+        }
+
         const scale = targetSize / hullSize;
 
         console.log('Hull size:', hullSize, 'Calculated scale:', scale);
 
         // Apply transformations - center on hull, not mast
         scene.scale.setScalar(scale);
-        // Center the model properly - move up to show full yacht
+        // Center the model properly - center on hull level
         scene.position.set(
           -center.x * scale,
-          -center.y * scale + 1.2, // Increased Y offset to show full yacht
+          -center.y * scale, // Center on actual model center
           -center.z * scale
         );
 
@@ -69,7 +78,14 @@ function YachtModel(props: any) {
       if (size.length() > 0) {
         // Detect mobile device and adjust target size
         const isMobile = window.innerWidth < 768;
-        const targetSize = isMobile ? 2.5 : 4; // Smaller for mobile
+        const isSmallMobile = window.innerWidth < 480;
+        let targetSize = 4; // Default desktop
+
+        if (isSmallMobile) {
+          targetSize = 1.2; // Very small for small phones
+        } else if (isMobile) {
+          targetSize = 1.8; // Small for mobile
+        }
 
         // Calculate scale to fit in view - focus on hull, not mast
         const hullSize = Math.max(size.x, size.z); // Use X and Z (hull dimensions), ignore Y (mast height)
@@ -88,10 +104,10 @@ function YachtModel(props: any) {
 
         // Apply transformations - center on hull, not mast
         scene.scale.setScalar(scale);
-        // Center the model properly - move up to show full yacht
+        // Center the model properly - center on hull level
         scene.position.set(
           -center.x * scale,
-          -center.y * scale + 1.2, // Increased Y offset to show full yacht
+          -center.y * scale, // Center on actual model center
           -center.z * scale
         );
 
@@ -170,14 +186,20 @@ function YachtScene() {
     // Detect mobile device and adjust camera
     const isMobile = window.innerWidth < 768;
 
-    if (isMobile) {
+    const isSmallMobile = window.innerWidth < 480;
+
+    if (isSmallMobile) {
+      // Very small mobile camera position
+      camera.position.set(2, 2, 3);
+      camera.lookAt(0, 0, 0); // Look at yacht center
+    } else if (isMobile) {
       // Mobile camera position - focus on yacht center
       camera.position.set(3, 2.5, 4);
-      camera.lookAt(0, 1, 0); // Look at yacht center, not ground
+      camera.lookAt(0, 0, 0); // Look at yacht center
     } else {
       // Desktop camera position - focus on yacht center
       camera.position.set(5, 3.5, 7);
-      camera.lookAt(0, 1, 0); // Look at yacht center, not ground
+      camera.lookAt(0, 0, 0); // Look at yacht center
     }
 
     camera.near = 0.1;
@@ -301,7 +323,7 @@ function YachtScene() {
         maxDistance={window.innerWidth < 768 ? 12 : 20}
         minPolarAngle={Math.PI * 0.1}
         maxPolarAngle={Math.PI * 0.9}
-        target={[0, 1, 0]} // Focus on yacht center, not ground
+        target={[0, 0, 0]} // Focus on yacht center, not mast top
         makeDefault
       />
     </>
