@@ -9,8 +9,36 @@ import * as THREE from 'three';
 // -------- Model loader --------
 function YachtModel(props: any) {
   const { scene } = useGLTF('/models/yaсht.glb');
+  const groupRef = useRef<THREE.Group>(null);
+
+  useEffect(() => {
+    if (scene && groupRef.current) {
+      // Calculate bounding box
+      const box = new THREE.Box3().setFromObject(scene);
+      const size = box.getSize(new THREE.Vector3());
+      const center = box.getCenter(new THREE.Vector3());
+
+      // Calculate scale to fit in view
+      const maxDimension = Math.max(size.x, size.y, size.z);
+      const targetSize = 3; // Target size in world units
+      const scale = targetSize / maxDimension;
+
+      // Apply transformations
+      scene.scale.setScalar(scale);
+      scene.position.sub(center.multiplyScalar(scale));
+
+      // Enable shadows
+      scene.traverse(child => {
+        if (child instanceof THREE.Mesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+    }
+  }, [scene]);
+
   return (
-    <group {...props} dispose={null}>
+    <group ref={groupRef} {...props} dispose={null}>
       <primitive object={scene} />
     </group>
   );
@@ -67,9 +95,11 @@ function YachtScene() {
 
   // Initial camera framing
   useEffect(() => {
-    camera.position.set(4.5, 2.6, 6.2);
-    camera.near = 0.05;
-    camera.far = 200;
+    // Set camera position for good initial view
+    camera.position.set(5, 3, 7);
+    camera.lookAt(0, 0, 0);
+    camera.near = 0.1;
+    camera.far = 1000;
     camera.updateProjectionMatrix();
   }, [camera]);
 
@@ -176,9 +206,11 @@ function YachtScene() {
         ref={controlsRef}
         enablePan={false}
         enableDamping
-        dampingFactor={0.08}
-        minDistance={1.2}
-        maxDistance={12}
+        dampingFactor={0.05}
+        minDistance={2}
+        maxDistance={20}
+        minPolarAngle={Math.PI * 0.1}
+        maxPolarAngle={Math.PI * 0.9}
         makeDefault
       />
     </>
