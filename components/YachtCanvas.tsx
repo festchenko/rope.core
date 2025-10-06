@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useEffect, Suspense } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF, Html } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
@@ -10,32 +10,80 @@ import * as THREE from 'three';
 function YachtModel(props: any) {
   const { scene } = useGLTF('/models/yaсht.glb');
   const groupRef = useRef<THREE.Group>(null);
+  const [isScaled, setIsScaled] = React.useState(false);
 
   useEffect(() => {
-    if (scene && groupRef.current) {
+    if (scene && !isScaled) {
+      console.log('Scaling model...', scene);
+
+      // Wait for model to be fully loaded
+      setTimeout(() => {
+        // Calculate bounding box
+        const box = new THREE.Box3().setFromObject(scene);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+
+        console.log('Model size:', size);
+        console.log('Model center:', center);
+
+        // Calculate scale to fit in view
+        const maxDimension = Math.max(size.x, size.y, size.z);
+        const targetSize = 4; // Target size in world units
+        const scale = targetSize / maxDimension;
+
+        console.log('Calculated scale:', scale);
+
+        // Apply transformations
+        scene.scale.setScalar(scale);
+        scene.position.sub(center.multiplyScalar(scale));
+
+        // Enable shadows
+        scene.traverse(child => {
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+
+        setIsScaled(true);
+        console.log('Model scaled successfully');
+      }, 100);
+    }
+  }, [scene, isScaled]);
+
+  // Alternative scaling approach using useFrame
+  useFrame(() => {
+    if (scene && !isScaled && scene.children.length > 0) {
+      console.log('useFrame scaling...');
+
       // Calculate bounding box
       const box = new THREE.Box3().setFromObject(scene);
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
 
-      // Calculate scale to fit in view
-      const maxDimension = Math.max(size.x, size.y, size.z);
-      const targetSize = 3; // Target size in world units
-      const scale = targetSize / maxDimension;
+      if (size.length() > 0) {
+        // Calculate scale to fit in view
+        const maxDimension = Math.max(size.x, size.y, size.z);
+        const targetSize = 4; // Target size in world units
+        const scale = targetSize / maxDimension;
 
-      // Apply transformations
-      scene.scale.setScalar(scale);
-      scene.position.sub(center.multiplyScalar(scale));
+        // Apply transformations
+        scene.scale.setScalar(scale);
+        scene.position.sub(center.multiplyScalar(scale));
 
-      // Enable shadows
-      scene.traverse(child => {
-        if (child instanceof THREE.Mesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-        }
-      });
+        // Enable shadows
+        scene.traverse(child => {
+          if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+
+        setIsScaled(true);
+        console.log('useFrame: Model scaled successfully');
+      }
     }
-  }, [scene]);
+  });
 
   return (
     <group ref={groupRef} {...props} dispose={null}>
