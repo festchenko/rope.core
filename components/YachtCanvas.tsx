@@ -12,64 +12,9 @@ function YachtModel(props: any) {
   const groupRef = useRef<THREE.Group>(null);
   const [isScaled, setIsScaled] = React.useState(false);
 
-  useEffect(() => {
-    if (scene && !isScaled) {
-      console.log('Scaling model...', scene);
+  // Remove useEffect scaling to prevent conflicts with useFrame
 
-      // Wait for model to be fully loaded
-      setTimeout(() => {
-        // Calculate bounding box
-        const box = new THREE.Box3().setFromObject(scene);
-        const size = box.getSize(new THREE.Vector3());
-        const center = box.getCenter(new THREE.Vector3());
-
-        console.log('Model size:', size);
-        console.log('Model center:', center);
-
-        // Calculate scale to fit in view - focus on hull, not mast
-        const hullSize = Math.max(size.x, size.z); // Use X and Z (hull dimensions), ignore Y (mast height)
-        const isClient = typeof window !== 'undefined';
-        const isMobile = isClient && window.innerWidth < 768;
-        const isSmallMobile = isClient && window.innerWidth < 480;
-        let targetSize = 4; // Default desktop
-
-        if (isSmallMobile) {
-          targetSize = 1.2; // Very small for small phones
-        } else if (isMobile) {
-          targetSize = 1.8; // Small for mobile
-        } else if (!isClient) {
-          // SSR fallback - use mobile size for safety
-          targetSize = 1.8;
-        }
-
-        const scale = targetSize / hullSize;
-
-        console.log('Hull size:', hullSize, 'Calculated scale:', scale);
-
-        // Apply transformations - center on hull, not mast
-        scene.scale.setScalar(scale);
-        // Center the model properly - center on hull level
-        scene.position.set(
-          -center.x * scale,
-          -center.y * scale, // Center on actual model center
-          -center.z * scale
-        );
-
-        // Enable shadows
-        scene.traverse(child => {
-          if (child instanceof THREE.Mesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
-          }
-        });
-
-        setIsScaled(true);
-        console.log('Model scaled successfully');
-      }, 100);
-    }
-  }, [scene, isScaled]);
-
-  // Alternative scaling approach using useFrame
+  // Single scaling approach using useFrame
   useFrame(() => {
     if (scene && !isScaled && scene.children.length > 0) {
       console.log('useFrame scaling...');
