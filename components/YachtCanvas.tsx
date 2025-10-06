@@ -1,55 +1,120 @@
-import React, { useMemo, useRef, useState, useEffect, Suspense } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls, Environment, Html } from '@react-three/drei';
+'use client';
+
+import React, { useRef, useEffect, Suspense } from 'react';
+import { Canvas, useThree } from '@react-three/fiber';
+import { OrbitControls, Environment, useGLTF, Html } from '@react-three/drei';
 import { motion } from 'framer-motion';
-import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-// -------- Yacht Model Component --------
-function YachtModel() {
+// -------- Model loader --------
+function YachtModel(props: any) {
   const { scene } = useGLTF('/models/yaht.glb');
-  const modelRef = useRef<THREE.Group>(null);
-
-  useFrame(() => {
-    if (modelRef.current) {
-      modelRef.current.castShadow = true;
-      modelRef.current.receiveShadow = true;
-    }
-  });
-
-  return <primitive ref={modelRef} object={scene} />;
+  return (
+    <group {...props} dispose={null}>
+      <primitive object={scene} />
+    </group>
+  );
 }
 
-// -------- Scene Component --------
+// -------- Tap-to-zoom helper --------
+function useTapZoom() {
+  const tapRef = useRef<{
+    t: number;
+    down: boolean;
+    moved: boolean;
+    x: number;
+    y: number;
+  } | null>(null);
+
+  const start = (e: PointerEvent) => {
+    tapRef.current = {
+      t: performance.now(),
+      down: true,
+      moved: false,
+      x: e.clientX,
+      y: e.clientY,
+    };
+  };
+
+  const move = (e: PointerEvent) => {
+    if (!tapRef.current) return;
+    const dx = Math.abs(e.clientX - tapRef.current.x);
+    const dy = Math.abs(e.clientY - tapRef.current.y);
+    if (dx > 6 || dy > 6) tapRef.current.moved = true;
+  };
+
+  const isTap = () => {
+    const st = tapRef.current;
+    if (!st) return false;
+    const dt = performance.now() - st.t;
+    return st.down && !st.moved && dt < 300;
+  };
+
+  const end = () => {
+    const ok = isTap();
+    tapRef.current = null;
+    return ok;
+  };
+
+  return { start, move, end };
+}
+
+// -------- Scene with camera animation --------
 function YachtScene() {
   const { camera, gl, scene } = useThree();
   const controlsRef = useRef<any>(null);
-  const [tap, setTap] = useState<{ x: number; y: number } | null>(null);
+  const tap = useTapZoom();
+
+  // Initial camera framing
+  useEffect(() => {
+    camera.position.set(4.5, 2.6, 6.2);
+    camera.near = 0.05;
+    camera.far = 200;
+    camera.updateProjectionMatrix();
+  }, [camera]);
 
   useEffect(() => {
-    const el = gl.domElement;
-    let isDragging = false;
-    let startPos = new THREE.Vector3();
-    let startTarget = new THREE.Vector3();
+    const el = gl.domElement as HTMLCanvasElement;
+    const onDown = (e: PointerEvent) => tap.start(e);
+    const onMove = (e: PointerEvent) => tap.move(e);
+    const onUp = async (e: PointerEvent) => {
+      // If a quick tap (no drag), dolly towards the tapped point
+      if (tap.end()) {
+        // Raycast to find the point under the cursor
+        const rc = new THREE.Raycaster();
+        const ndc = new THREE.Vector2(
+          (e.clientX / el.clientWidth) * 2 - 1,
+          -(e.clientY / el.clientHeight) * 2 + 1
+        );
+        rc.setFromCamera(ndc, camera);
+        // Intersect with scene; fall back to a point ahead if nothing
+        const hits = rc.intersectObjects(scene.children, true);
+        const target = new THREE.Vector3();
+        if (hits && hits.length > 0) target.copy(hits[0].point);
+        else target.set(0, 0, 0);
 
-    const onDown = (e: PointerEvent) => {
-      isDragging = false;
-      startPos.copy(camera.position);
-      if (controlsRef.current) {
-        startTarget.copy(controlsRef.current.target);
-      }
-    };
+        // Smoothly move camera closer to the target while keeping orbit target synced
+        const ctrl = controlsRef.current;
+        if (ctrl) {
+          const startPos = camera.position.clone();
+          const dir = target.clone().sub(startPos).normalize();
+          const newPos = target.clone().addScaledVector(dir, 1.6);
 
-    const onMove = () => {
-      isDragging = true;
-    };
+          const startTarget = ctrl.target.clone();
+          const endTarget = target.clone();
 
-    const onUp = (e: PointerEvent) => {
-      if (!isDragging && e.pointerType !== 'mouse') {
-        const rect = el.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-        const y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-        setTap({ x, y });
+          const duration = 420; // ms
+          const t0 = performance.now();
+          const animate = () => {
+            const t = Math.min(1, (performance.now() - t0) / duration);
+            const ease = t * (2 - t); // easeOutQuad
+            camera.position.lerpVectors(startPos, newPos, ease);
+            ctrl.target.lerpVectors(startTarget, endTarget, ease);
+            ctrl.update();
+            if (t < 1) requestAnimationFrame(animate);
+          };
+          requestAnimationFrame(animate);
+        }
       }
     };
 
@@ -57,46 +122,14 @@ function YachtScene() {
     el.addEventListener('pointermove', onMove, { passive: true });
     el.addEventListener('pointerup', onUp, { passive: true });
     el.addEventListener('pointercancel', onUp, { passive: true });
+
     return () => {
       el.removeEventListener('pointerdown', onDown);
       el.removeEventListener('pointermove', onMove);
       el.removeEventListener('pointerup', onUp);
       el.removeEventListener('pointercancel', onUp);
     };
-  }, [camera, gl, scene]);
-
-  useEffect(() => {
-    if (tap && controlsRef.current) {
-      const raycaster = new THREE.Raycaster();
-      raycaster.setFromCamera(new THREE.Vector2(tap.x, tap.y), camera);
-      const intersects = raycaster.intersectObjects(scene.children, true);
-
-      if (intersects.length > 0) {
-        const target = intersects[0].point;
-        const newPos = camera.position
-          .clone()
-          .sub(target)
-          .normalize()
-          .multiplyScalar(3)
-          .add(target);
-        const startPos = camera.position.clone();
-        const startTarget = controlsRef.current.target.clone();
-        const endTarget = target.clone();
-
-        const duration = 420; // ms
-        const t0 = performance.now();
-        const animate = () => {
-          const t = Math.min(1, (performance.now() - t0) / duration);
-          const ease = t * (2 - t); // easeOutQuad
-          camera.position.lerpVectors(startPos, newPos, ease);
-          controlsRef.current.target.lerpVectors(startTarget, endTarget, ease);
-          controlsRef.current.update();
-          if (t < 1) requestAnimationFrame(animate);
-        };
-        requestAnimationFrame(animate);
-      }
-    }
-  }, [tap, camera, scene]);
+  }, [camera, gl, scene, tap]);
 
   return (
     <>
