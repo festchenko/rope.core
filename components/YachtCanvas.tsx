@@ -28,14 +28,18 @@ function YachtModel(props: any) {
 
         // Calculate scale to fit in view - focus on hull, not mast
         const hullSize = Math.max(size.x, size.z); // Use X and Z (hull dimensions), ignore Y (mast height)
-        const isMobile = window.innerWidth < 768;
-        const isSmallMobile = window.innerWidth < 480;
+        const isClient = typeof window !== 'undefined';
+        const isMobile = isClient && window.innerWidth < 768;
+        const isSmallMobile = isClient && window.innerWidth < 480;
         let targetSize = 4; // Default desktop
 
         if (isSmallMobile) {
           targetSize = 1.2; // Very small for small phones
         } else if (isMobile) {
           targetSize = 1.8; // Small for mobile
+        } else if (!isClient) {
+          // SSR fallback - use mobile size for safety
+          targetSize = 1.8;
         }
 
         const scale = targetSize / hullSize;
@@ -76,15 +80,19 @@ function YachtModel(props: any) {
       const center = box.getCenter(new THREE.Vector3());
 
       if (size.length() > 0) {
-        // Detect mobile device and adjust target size
-        const isMobile = window.innerWidth < 768;
-        const isSmallMobile = window.innerWidth < 480;
+        // Detect mobile device and adjust target size - with SSR safety
+        const isClient = typeof window !== 'undefined';
+        const isMobile = isClient && window.innerWidth < 768;
+        const isSmallMobile = isClient && window.innerWidth < 480;
         let targetSize = 4; // Default desktop
 
         if (isSmallMobile) {
           targetSize = 1.2; // Very small for small phones
         } else if (isMobile) {
           targetSize = 1.8; // Small for mobile
+        } else if (!isClient) {
+          // SSR fallback - use mobile size for safety
+          targetSize = 1.8;
         }
 
         // Calculate scale to fit in view - focus on hull, not mast
@@ -183,10 +191,10 @@ function YachtScene() {
 
   // Initial camera framing
   useEffect(() => {
-    // Detect mobile device and adjust camera
-    const isMobile = window.innerWidth < 768;
-
-    const isSmallMobile = window.innerWidth < 480;
+    // Detect mobile device and adjust camera - with SSR safety
+    const isClient = typeof window !== 'undefined';
+    const isMobile = isClient && window.innerWidth < 768;
+    const isSmallMobile = isClient && window.innerWidth < 480;
 
     if (isSmallMobile) {
       // Very small mobile camera position
@@ -319,8 +327,12 @@ function YachtScene() {
         enablePan={false}
         enableDamping
         dampingFactor={0.05}
-        minDistance={window.innerWidth < 768 ? 1.5 : 2}
-        maxDistance={window.innerWidth < 768 ? 12 : 20}
+        minDistance={
+          typeof window !== 'undefined' && window.innerWidth < 768 ? 1.5 : 2
+        }
+        maxDistance={
+          typeof window !== 'undefined' && window.innerWidth < 768 ? 12 : 20
+        }
         minPolarAngle={Math.PI * 0.1}
         maxPolarAngle={Math.PI * 0.9}
         target={[0, -0.5, 0]} // Focus on yacht center, slightly below model center
