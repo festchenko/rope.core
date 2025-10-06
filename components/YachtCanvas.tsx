@@ -7,7 +7,7 @@ import * as THREE from 'three';
 
 // -------- Yacht Model Component --------
 function YachtModel() {
-  const { scene } = useGLTF('/models/yacht.glb');
+  const { scene } = useGLTF('/models/yaht.glb');
   const modelRef = useRef<THREE.Group>(null);
 
   useFrame(() => {
