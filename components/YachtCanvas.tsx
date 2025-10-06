@@ -35,10 +35,10 @@ function YachtModel(props: any) {
 
         // Apply transformations - center on hull, not mast
         scene.scale.setScalar(scale);
-        // Center the model but keep it at ground level
+        // Center the model properly - move up to show full yacht
         scene.position.set(
           -center.x * scale,
-          -center.y * scale + 0.5,
+          -center.y * scale + 1.2, // Increased Y offset to show full yacht
           -center.z * scale
         );
 
@@ -88,10 +88,10 @@ function YachtModel(props: any) {
 
         // Apply transformations - center on hull, not mast
         scene.scale.setScalar(scale);
-        // Center the model but keep it at ground level
+        // Center the model properly - move up to show full yacht
         scene.position.set(
           -center.x * scale,
-          -center.y * scale + 0.5,
+          -center.y * scale + 1.2, // Increased Y offset to show full yacht
           -center.z * scale
         );
 
@@ -171,13 +171,13 @@ function YachtScene() {
     const isMobile = window.innerWidth < 768;
 
     if (isMobile) {
-      // Mobile camera position - focus on hull level
-      camera.position.set(3, 1.5, 4);
-      camera.lookAt(0, 0, 0);
+      // Mobile camera position - focus on yacht center
+      camera.position.set(3, 2.5, 4);
+      camera.lookAt(0, 1, 0); // Look at yacht center, not ground
     } else {
-      // Desktop camera position - focus on hull level
-      camera.position.set(5, 2.5, 7);
-      camera.lookAt(0, 0, 0);
+      // Desktop camera position - focus on yacht center
+      camera.position.set(5, 3.5, 7);
+      camera.lookAt(0, 1, 0); // Look at yacht center, not ground
     }
 
     camera.near = 0.1;
@@ -301,6 +301,7 @@ function YachtScene() {
         maxDistance={window.innerWidth < 768 ? 12 : 20}
         minPolarAngle={Math.PI * 0.1}
         maxPolarAngle={Math.PI * 0.9}
+        target={[0, 1, 0]} // Focus on yacht center, not ground
         makeDefault
       />
     </>
