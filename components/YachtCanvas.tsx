@@ -62,10 +62,22 @@ function YachtModel(props: any) {
       const center = box.getCenter(new THREE.Vector3());
 
       if (size.length() > 0) {
+        // Detect mobile device and adjust target size
+        const isMobile = window.innerWidth < 768;
+        const targetSize = isMobile ? 2.5 : 4; // Smaller for mobile
+
         // Calculate scale to fit in view
         const maxDimension = Math.max(size.x, size.y, size.z);
-        const targetSize = 4; // Target size in world units
         const scale = targetSize / maxDimension;
+
+        console.log(
+          'Mobile:',
+          isMobile,
+          'Target size:',
+          targetSize,
+          'Scale:',
+          scale
+        );
 
         // Apply transformations
         scene.scale.setScalar(scale);
@@ -143,12 +155,24 @@ function YachtScene() {
 
   // Initial camera framing
   useEffect(() => {
-    // Set camera position for good initial view
-    camera.position.set(5, 3, 7);
-    camera.lookAt(0, 0, 0);
+    // Detect mobile device and adjust camera
+    const isMobile = window.innerWidth < 768;
+
+    if (isMobile) {
+      // Mobile camera position - closer and lower
+      camera.position.set(3, 2, 4);
+      camera.lookAt(0, 0, 0);
+    } else {
+      // Desktop camera position
+      camera.position.set(5, 3, 7);
+      camera.lookAt(0, 0, 0);
+    }
+
     camera.near = 0.1;
     camera.far = 1000;
     camera.updateProjectionMatrix();
+
+    console.log('Camera set for mobile:', isMobile);
   }, [camera]);
 
   useEffect(() => {
@@ -261,8 +285,8 @@ function YachtScene() {
         enablePan={false}
         enableDamping
         dampingFactor={0.05}
-        minDistance={2}
-        maxDistance={20}
+        minDistance={window.innerWidth < 768 ? 1.5 : 2}
+        maxDistance={window.innerWidth < 768 ? 12 : 20}
         minPolarAngle={Math.PI * 0.1}
         maxPolarAngle={Math.PI * 0.9}
         makeDefault
@@ -274,14 +298,19 @@ function YachtScene() {
 // -------- Public component --------
 export default function YachtCanvas() {
   return (
-    <div className='w-full h-[calc(100vh-4rem)] md:h-[80vh] rounded-2xl overflow-hidden border bg-neutral-950'>
+    <div className='w-full h-[calc(100vh-4rem)] md:h-[80vh] rounded-2xl overflow-hidden border bg-neutral-950 ios-fullscreen'>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4 }}
         className='w-full h-full'
       >
-        <Canvas shadows camera={{ fov: 45 }} dpr={[1, 2]}>
+        <Canvas
+          shadows
+          camera={{ fov: 45 }}
+          dpr={[1, 2]}
+          style={{ width: '100%', height: '100%' }}
+        >
           <color attach='background' args={['#0a0b0f']} />
           <Suspense fallback={null}>
             <YachtScene />
