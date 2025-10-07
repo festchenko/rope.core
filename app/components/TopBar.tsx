@@ -37,7 +37,7 @@ export default function TopBar() {
               ></div>
             </div>
             <span className='text-sm font-medium text-white/80 tracking-wide'>
-              live
+              demo
             </span>
           </div>
         </div>
