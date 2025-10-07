@@ -14,12 +14,10 @@ function YachtModel(props: any) {
 
   // Remove useEffect scaling to prevent conflicts with useFrame
 
-  // Single scaling approach using useFrame
+  // Optimized scaling approach using useFrame
   useFrame(() => {
     if (scene && !isScaled && scene.children.length > 0) {
-      console.log('useFrame scaling...');
-
-      // Calculate bounding box
+      // Calculate bounding box only once
       const box = new THREE.Box3().setFromObject(scene);
       const size = box.getSize(new THREE.Vector3());
       const center = box.getCenter(new THREE.Vector3());
@@ -44,17 +42,6 @@ function YachtModel(props: any) {
         const hullSize = Math.max(size.x, size.z); // Use X and Z (hull dimensions), ignore Y (mast height)
         const scale = targetSize / hullSize;
 
-        console.log(
-          'Mobile:',
-          isMobile,
-          'Target size:',
-          targetSize,
-          'Hull size:',
-          hullSize,
-          'Scale:',
-          scale
-        );
-
         // Apply transformations - center on hull, not mast
         scene.scale.setScalar(scale);
         // Center the model properly - center on hull level
@@ -64,7 +51,7 @@ function YachtModel(props: any) {
           -center.z * scale
         );
 
-        // Enable shadows
+        // Enable shadows efficiently
         scene.traverse(child => {
           if (child instanceof THREE.Mesh) {
             child.castShadow = true;
@@ -73,7 +60,6 @@ function YachtModel(props: any) {
         });
 
         setIsScaled(true);
-        console.log('useFrame: Model scaled successfully');
       }
     }
   });
@@ -133,8 +119,26 @@ function YachtScene() {
   const { camera, gl, scene } = useThree();
   const controlsRef = useRef<any>(null);
   const tap = useTapZoom();
+  const autoRotateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [autoRotateEnabled, setAutoRotateEnabled] = React.useState(true);
 
-  // Initial camera framing
+  // Auto-rotation management
+  const handleUserInteraction = React.useCallback(() => {
+    // Disable auto-rotation immediately
+    setAutoRotateEnabled(false);
+
+    // Clear existing timeout
+    if (autoRotateTimeoutRef.current) {
+      clearTimeout(autoRotateTimeoutRef.current);
+    }
+
+    // Set new timeout to re-enable auto-rotation after 5 seconds
+    autoRotateTimeoutRef.current = setTimeout(() => {
+      setAutoRotateEnabled(true);
+    }, 5000);
+  }, []);
+
+  // Initial camera framing - run only once
   useEffect(() => {
     // Detect mobile device and adjust camera - with SSR safety
     const isClient = typeof window !== 'undefined';
@@ -158,14 +162,27 @@ function YachtScene() {
     camera.near = 0.1;
     camera.far = 1000;
     camera.updateProjectionMatrix();
+  }, [camera]); // Include camera dependency
 
-    console.log('Camera set for mobile:', isMobile);
-  }, [camera]);
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoRotateTimeoutRef.current) {
+        clearTimeout(autoRotateTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const el = gl.domElement as HTMLCanvasElement;
-    const onDown = (e: PointerEvent) => tap.start(e);
-    const onMove = (e: PointerEvent) => tap.move(e);
+    const onDown = (e: PointerEvent) => {
+      tap.start(e);
+      handleUserInteraction(); // Disable auto-rotation on interaction
+    };
+    const onMove = (e: PointerEvent) => {
+      tap.move(e);
+      handleUserInteraction(); // Disable auto-rotation on interaction
+    };
     const onUp = async (e: PointerEvent) => {
       // If a quick tap (no drag), dolly towards the tapped point
       if (tap.end()) {
@@ -218,26 +235,54 @@ function YachtScene() {
       el.removeEventListener('pointerup', onUp);
       el.removeEventListener('pointercancel', onUp);
     };
-  }, [camera, gl, scene, tap]);
+  }, [camera, gl, scene, tap, handleUserInteraction]);
 
   return (
     <>
-      {/* Lights */}
-      <ambientLight intensity={0.45} />
+      {/* Gradient background fog to match CSS gradient */}
+      <fog attach='fog' args={['#0b1018', 5, 20]} />
+      {/* Cinematic Sunset Marina Lighting */}
+      <ambientLight intensity={0.7} color='#ffffff' />
       <directionalLight
-        position={[6, 5, 4]}
-        intensity={1.1}
+        position={[5, 8, 10]}
+        intensity={2.5}
+        color='#fff9e8'
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
       />
+      <directionalLight
+        position={[-6, 3, -2]}
+        intensity={0.6}
+        color='#88aaff'
+      />
+      <hemisphereLight args={['#ddeeff', '#111', 0.5]} />
 
       {/* Model */}
       <Suspense
         fallback={
           <Html center>
-            <div className='text-xs px-2 py-1 rounded bg-black/50 text-white'>
-              Loading yacht…
+            <div className='flex flex-col items-center justify-center space-y-6'>
+              {/* Animated loading spinner */}
+              <div className='relative'>
+                <div className='w-16 h-16 border-3 border-white/10 rounded-full animate-spin border-t-accent'></div>
+                <div className='absolute inset-0 w-16 h-16 border-3 border-transparent rounded-full animate-pulse-glow border-t-accent/30'></div>
+                <div
+                  className='absolute inset-2 w-12 h-12 border-2 border-transparent rounded-full animate-spin border-t-accent/60'
+                  style={{
+                    animationDirection: 'reverse',
+                    animationDuration: '1.5s',
+                  }}
+                ></div>
+              </div>
+              {/* Loading text */}
+              <div className='text-base font-medium text-white/90 tracking-wide'>
+                Loading yacht…
+              </div>
+              {/* Progress bar */}
+              <div className='w-40 h-1.5 bg-white/10 rounded-full overflow-hidden'>
+                <div className='h-full bg-gradient-to-r from-accent via-accent/80 to-accent/60 rounded-full animate-pulse-glow'></div>
+              </div>
             </div>
           </Html>
         }
@@ -264,7 +309,7 @@ function YachtScene() {
       </mesh> */}
 
       {/* Environment lighting */}
-      <Environment preset='city' />
+      <Environment preset='sunset' />
 
       {/* Controls: rotate + pinch-zoom; tap handled above */}
       <OrbitControls
@@ -272,6 +317,8 @@ function YachtScene() {
         enablePan={false}
         enableDamping
         dampingFactor={0.05}
+        autoRotate={autoRotateEnabled}
+        autoRotateSpeed={0.6}
         minDistance={
           typeof window !== 'undefined' && window.innerWidth < 768 ? 1.5 : 2
         }
@@ -290,7 +337,7 @@ function YachtScene() {
 // -------- Public component --------
 export default function YachtCanvas() {
   return (
-    <div className='w-full h-[calc(100vh-4rem)] md:h-[80vh] rounded-2xl overflow-hidden border bg-neutral-950 ios-fullscreen'>
+    <div className='w-full h-[calc(100vh-4rem)] md:h-[80vh] rounded-sm overflow-hidden border border-gray-600 bg-gray-800 ios-fullscreen touch-none'>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -301,9 +348,15 @@ export default function YachtCanvas() {
           shadows
           camera={{ fov: 45 }}
           dpr={[1, 2]}
-          style={{ width: '100%', height: '100%' }}
+          performance={{ min: 0.5 }}
+          style={{
+            width: '100%',
+            height: '100%',
+            background:
+              'linear-gradient(135deg, #0b1018 0%, #2a2a2a 50%, #1a1a1a 100%)',
+          }}
         >
-          <color attach='background' args={['#0a0b0f']} />
+          <color attach='background' args={['#0b1018']} />
           <Suspense fallback={null}>
             <YachtScene />
           </Suspense>

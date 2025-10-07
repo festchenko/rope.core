@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent Next.js purple flash - apply immediately */
+html {
+  background: #111827 !important;
+}
+
 /* 3D Perspective */
 .perspective-1000 {
   perspective: 1000px;
@@ -15,7 +20,7 @@
 }
 
 :root {
-  --bg: #0f0f23;
+  --bg: #0b1018;
   --fg: #ffffff;
   --card: rgba(255, 255, 255, 0.05);
   --card-hover: rgba(255, 255, 255, 0.08);
@@ -28,7 +33,7 @@
 
 html,
 body {
-  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  background: #111827;
   color: var(--fg);
   margin: 0;
   padding: 0;
@@ -36,6 +41,85 @@ body {
   height: 100vh;
   font-family: var(--font-inter), system-ui, sans-serif;
   overflow: hidden;
+}
+
+/* Prevent Next.js purple flash */
+#__next {
+  background: #111827;
+  min-height: 100vh;
+  height: 100vh;
+}
+
+/* Loading animation improvements */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Crescent Moon Animations */
+@keyframes moon-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 191, 166, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(0, 191, 166, 0.5);
+    transform: scale(1.05);
+  }
+}
+
+@keyframes star-twinkle {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.animate-moon-glow {
+  animation: moon-glow 3s ease-in-out infinite;
+}
+
+.animate-star-twinkle {
+  animation: star-twinkle 2s ease-in-out infinite;
+}
+
+/* Smooth transitions for better UX */
+* {
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+/* Optimize 3D performance */
+canvas {
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 /* Fullscreen mobile support */
@@ -106,36 +190,26 @@ body {
   }
 }
 
-/* Glassmorphism utilities */
+/* Flat design utilities */
 .glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: #374151;
+  border: 1px solid #6b7280;
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+  background: #374151;
+  border: 1px solid #6b7280;
 }
 
 .glass-button {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
+  background: #4b5563;
+  border: 1px solid #6b7280;
+  transition: all 0.2s ease;
 }
 
 .glass-button:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  background: #6b7280;
+  border-color: #9ca3af;
 }
 
 /* Focus styles for accessibility */

@@ -31,7 +31,7 @@ export const viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
-  themeColor: '#0B0F12',
+  themeColor: '#0b1018',
   colorScheme: 'dark',
 };
 
@@ -42,6 +42,30 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en' className={`${labco.variable} ${inter.variable}`}>
+      <head>
+        <link
+          rel='preload'
+          href='/models/yaсht.glb'
+          as='fetch'
+          crossOrigin='anonymous'
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Disable React DevTools to prevent semver errors
+              if (typeof window !== 'undefined') {
+                window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
+                  isDisabled: true,
+                  supportsFiber: true,
+                  inject: function() {},
+                  onCommitFiberRoot: function() {},
+                  onCommitFiberUnmount: function() {}
+                };
+              }
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${inter.className} text-fg antialiased h-screen overflow-hidden`}
       >

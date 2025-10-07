@@ -4,8 +4,8 @@ import React from 'react';
 
 export default function TopBar() {
   return (
-    <header className='sticky top-0 z-50 glass border-b border-border w-full'>
-      <div className='flex items-center justify-between px-4 py-4'>
+    <header className='sticky top-0 z-50 w-full bg-gray-800 border border-gray-600 rounded-sm'>
+      <div className='flex items-center justify-between px-4 py-3'>
         <div
           className='text-xl font-normal tracking-[0.22em] flex items-baseline'
           style={{ fontFamily: 'LAB-Grotesk, sans-serif' }}
@@ -15,25 +15,17 @@ export default function TopBar() {
           <span className='text-[0.5em] text-accent animate-pulse'>core</span>
           <span className='text-[0.5em] text-fg'>{'}'}</span>
         </div>
-        <div
-          className='flex items-center gap-2 px-4 py-2 rounded-full glass-card relative status-pill cursor-pointer'
-          style={{
-            background: 'transparent',
-          }}
-        >
-          <div className='particle'></div>
-          <div className='particle'></div>
-          <div className='particle'></div>
-          <div className='particle'></div>
-          <div className='relative w-8 h-8 flex items-center justify-center'>
-            <div className='absolute w-2 h-2 rounded-full bg-accent glow-accent'></div>
-            <div className='absolute w-2 h-2 rounded-full water-ripple'></div>
-            <div className='absolute w-2 h-2 rounded-full water-ripple'></div>
-            <div className='absolute w-2 h-2 rounded-full water-ripple'></div>
+        <div className='flex items-center gap-3'>
+          {/* Simple pulsing indicator */}
+          <div className='flex items-center gap-2'>
+            <div className='relative w-2 h-2'>
+              <div className='absolute w-2 h-2 rounded-full bg-accent animate-pulse'></div>
+              <div className='absolute w-2 h-2 rounded-full bg-accent/30 animate-ping'></div>
+            </div>
+            <span className='text-sm font-medium text-white/80 tracking-wide'>
+              live
+            </span>
           </div>
-          <span className='text-sm font-inter font-medium shimmer-text'>
-            Demo • Offline
-          </span>
         </div>
       </div>
     </header>

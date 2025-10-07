@@ -18,9 +18,9 @@ const YachtCanvas = dynamic(() => import('../components/YachtCanvas'), {
 
 export default function Home() {
   return (
-    <div className='h-dvh ios-fullscreen flex flex-col overflow-hidden'>
+    <div className='h-dvh ios-fullscreen flex flex-col overflow-hidden border border-gray-600 bg-gray-900'>
       <TopBar />
-      <div className='flex-1 bg-[#0B0F12] p-4'>
+      <div className='flex-1 bg-gray-900 p-4'>
         <YachtCanvas />
       </div>
     </div>
