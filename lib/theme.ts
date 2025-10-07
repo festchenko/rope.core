@@ -5,24 +5,24 @@ export const theme = {
     background: '#1a1d23',
     appBackground: '#0f1115', // Более темный фон для всего приложения
     foreground: '#ffffff',
-    
+
     // Card colors
     card: '#374151',
     cardHover: '#4b5563',
-    
+
     // Text colors
     muted: 'rgba(255, 255, 255, 0.6)',
-    
+
     // Accent color
     accent: '#6b7280',
     accentGlow: 'rgba(107, 114, 128, 0.3)',
-    
+
     // Border colors
     border: '#6b7280',
-    
+
     // Shadow colors
     shadow: 'rgba(0, 0, 0, 0.1)',
-    
+
     // System colors
     system: {
       energy: '#6b7280',
@@ -32,7 +32,7 @@ export const theme = {
       environment: '#6b7280',
       alerts: '#6b7280',
     },
-    
+
     // 3D Scene colors
     scene: {
       fog: '#1a1d23',
@@ -41,14 +41,14 @@ export const theme = {
       directionalLightSecondary: '#ffffff',
       hemisphereLight: '#ffffff',
     },
-    
+
     // Loading colors
     loading: {
       background: '#1a1d23',
       spinner: '#6b7280',
-    }
+    },
   },
-  
+
   // CSS custom properties for runtime access
   cssVariables: {
     '--bg': '#1a1d23',
@@ -61,7 +61,7 @@ export const theme = {
     '--accent-glow': 'rgba(107, 114, 128, 0.3)',
     '--border': '#6b7280',
     '--shadow': 'rgba(0, 0, 0, 0.1)',
-  }
+  },
 } as const;
 
 export type Theme = typeof theme;
