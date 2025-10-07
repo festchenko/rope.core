@@ -4,7 +4,22 @@
 
 /* Prevent Next.js purple flash - apply immediately */
 html {
-  background: #111827 !important;
+  background: #1a1d23 !important;
+}
+
+/* Force remove any purple/violet colors */
+* {
+  --next-purple: #1a1d23 !important;
+}
+
+/* Override any potential purple elements */
+[data-nextjs-scroll-focus-boundary] {
+  background: #1a1d23 !important;
+}
+
+/* Remove any purple from loading states */
+.next-loading {
+  background: #1a1d23 !important;
 }
 
 /* 3D Perspective */
@@ -20,20 +35,20 @@ html {
 }
 
 :root {
-  --bg: #0b1018;
+  --bg: #1a1d23;
   --fg: #ffffff;
-  --card: rgba(255, 255, 255, 0.05);
-  --card-hover: rgba(255, 255, 255, 0.08);
+  --card: #374151;
+  --card-hover: #4b5563;
   --muted: rgba(255, 255, 255, 0.6);
-  --accent: #00bfa6;
-  --accent-glow: rgba(0, 191, 166, 0.3);
-  --border: rgba(255, 255, 255, 0.1);
+  --accent: #6b7280;
+  --accent-glow: rgba(107, 114, 128, 0.3);
+  --border: #6b7280;
   --shadow: rgba(0, 0, 0, 0.1);
 }
 
 html,
 body {
-  background: #111827;
+  background: #1a1d23;
   color: var(--fg);
   margin: 0;
   padding: 0;
@@ -45,7 +60,7 @@ body {
 
 /* Prevent Next.js purple flash */
 #__next {
-  background: #111827;
+  background: #1a1d23;
   min-height: 100vh;
   height: 100vh;
 }
@@ -82,11 +97,11 @@ body {
 /* Crescent Moon Animations */
 @keyframes moon-glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(0, 191, 166, 0.3);
+    box-shadow: 0 0 20px rgba(107, 114, 128, 0.3);
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 30px rgba(0, 191, 166, 0.5);
+    box-shadow: 0 0 30px rgba(107, 114, 128, 0.5);
     transform: scale(1.05);
   }
 }
@@ -209,7 +224,7 @@ body {
 
 .glass-button:hover {
   background: #6b7280;
-  border-color: #9ca3af;
+  border-color: #6b7280;
 }
 
 /* Focus styles for accessibility */
@@ -277,7 +292,7 @@ button:focus-visible {
 .water-ripple {
   animation: water-ripple 2s ease-out infinite;
   background: transparent !important;
-  border: 2px solid rgba(0, 191, 166, 0.6);
+  border: 2px solid rgba(107, 114, 128, 0.6);
 }
 
 .water-ripple:nth-child(2) {
@@ -310,7 +325,7 @@ button:focus-visible {
   position: absolute;
   width: 2px;
   height: 2px;
-  background: rgba(0, 191, 166, 0.6);
+  background: rgba(107, 114, 128, 0.6);
   border-radius: 50%;
   animation: float-up 3s ease-out infinite;
 }
@@ -339,7 +354,7 @@ button:focus-visible {
 
 .status-pill:hover {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 4px 15px rgba(0, 191, 166, 0.2);
+  box-shadow: 0 4px 15px rgba(107, 114, 128, 0.2);
 }
 
 /* Text shimmer effect */
@@ -353,7 +368,7 @@ button:focus-visible {
 }
 
 .shimmer-text {
-  background: linear-gradient(90deg, #9ca3af 0%, #00bfa6 50%, #9ca3af 100%);
+  background: linear-gradient(90deg, #6b7280 0%, #9ca3af 50%, #6b7280 100%);
   background-size: 200% 100%;
   background-clip: text;
   -webkit-background-clip: text;

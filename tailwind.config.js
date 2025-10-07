@@ -1,3 +1,5 @@
+const { theme } = require('./lib/theme');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -12,15 +14,16 @@ module.exports = {
         inter: ['var(--font-inter)', 'sans-serif'],
       },
       colors: {
-        bg: '#0F0F23',
-        fg: '#FFFFFF',
-        card: 'rgba(255, 255, 255, 0.05)',
-        'card-hover': 'rgba(255, 255, 255, 0.08)',
-        muted: 'rgba(255, 255, 255, 0.6)',
-        accent: '#00BFA6',
-        'accent-glow': 'rgba(0, 191, 166, 0.3)',
-        border: 'rgba(255, 255, 255, 0.1)',
-        shadow: 'rgba(0, 0, 0, 0.1)',
+        bg: theme.colors.background,
+        'app-bg': theme.colors.appBackground,
+        fg: theme.colors.foreground,
+        card: theme.colors.card,
+        'card-hover': theme.colors.cardHover,
+        muted: theme.colors.muted,
+        accent: theme.colors.accent,
+        'accent-glow': theme.colors.accentGlow,
+        border: theme.colors.border,
+        shadow: theme.colors.shadow,
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

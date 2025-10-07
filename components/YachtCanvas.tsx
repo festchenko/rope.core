@@ -5,6 +5,7 @@ import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, useGLTF, Html } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
+import { theme } from '../lib/theme';
 
 // -------- Model loader --------
 function YachtModel(props: any) {
@@ -240,13 +241,13 @@ function YachtScene() {
   return (
     <>
       {/* Gradient background fog to match CSS gradient */}
-      <fog attach='fog' args={['#0b1018', 5, 20]} />
+      <fog attach='fog' args={[theme.colors.scene.fog, 5, 20]} />
       {/* Cinematic Sunset Marina Lighting */}
-      <ambientLight intensity={0.7} color='#ffffff' />
+      <ambientLight intensity={0.7} color={theme.colors.scene.ambientLight} />
       <directionalLight
         position={[5, 8, 10]}
         intensity={2.5}
-        color='#fff9e8'
+        color={theme.colors.scene.directionalLight}
         castShadow
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
@@ -254,9 +255,15 @@ function YachtScene() {
       <directionalLight
         position={[-6, 3, -2]}
         intensity={0.6}
-        color='#88aaff'
+        color={theme.colors.scene.directionalLightSecondary}
       />
-      <hemisphereLight args={['#ddeeff', '#111', 0.5]} />
+      <hemisphereLight
+        args={[
+          theme.colors.scene.hemisphereLight,
+          theme.colors.background,
+          0.5,
+        ]}
+      />
 
       {/* Model */}
       <Suspense
@@ -300,7 +307,7 @@ function YachtScene() {
       >
         <circleGeometry args={[8, 64]} />
         <meshStandardMaterial 
-          color='#1a1a1a' 
+          color='#1a1d23' 
           metalness={0} 
           roughness={0.9} 
           transparent={true}
@@ -337,7 +344,7 @@ function YachtScene() {
 // -------- Public component --------
 export default function YachtCanvas() {
   return (
-    <div className='w-full h-[calc(100vh-4rem)] md:h-[80vh] rounded-sm overflow-hidden border border-gray-600 bg-gray-800 ios-fullscreen touch-none'>
+    <div className='w-full h-[calc(100vh-4rem)] md:h-[80vh] rounded-lg overflow-hidden border border-gray-600 bg-gray-800 ios-fullscreen touch-none'>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -352,11 +359,10 @@ export default function YachtCanvas() {
           style={{
             width: '100%',
             height: '100%',
-            background:
-              'linear-gradient(135deg, #0b1018 0%, #2a2a2a 50%, #1a1a1a 100%)',
+            background: `linear-gradient(135deg, ${theme.colors.background} 0%, ${theme.colors.card} 50%, ${theme.colors.background} 100%)`,
           }}
         >
-          <color attach='background' args={['#0b1018']} />
+          <color attach='background' args={[theme.colors.background]} />
           <Suspense fallback={null}>
             <YachtScene />
           </Suspense>

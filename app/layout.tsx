@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { theme } from '../lib/theme';
 
 const labco = localFont({
   src: '../public/fonts/LAB-Grotesk.otf',
@@ -31,7 +32,7 @@ export const viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
-  themeColor: '#0b1018',
+  themeColor: theme.colors.background,
   colorScheme: 'dark',
 };
 
