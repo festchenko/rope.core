@@ -6,12 +6,15 @@ import { OrbitControls, Environment, useGLTF, Html } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
 import { theme } from '../lib/theme';
+import { useUI } from '../state/useUI';
+import OrbitSystems from './OrbitSystems';
 
 // -------- Model loader --------
 function YachtModel(props: any) {
   const { scene } = useGLTF('/models/yaсht.glb');
   const groupRef = useRef<THREE.Group>(null);
   const [isScaled, setIsScaled] = React.useState(false);
+  const { rotationY } = useUI();
 
   // Remove useEffect scaling to prevent conflicts with useFrame
 
@@ -61,6 +64,17 @@ function YachtModel(props: any) {
         });
 
         setIsScaled(true);
+      }
+    }
+
+    // Apply rotation based on active system
+    if (groupRef.current) {
+      const { activeSystem, systems } = useUI.getState();
+      const activeSystemIndex = systems.findIndex(s => s.id === activeSystem);
+      if (activeSystemIndex !== -1) {
+        const angleStep = (2 * Math.PI) / systems.length;
+        const targetRotation = activeSystemIndex * angleStep;
+        groupRef.current.rotation.y = targetRotation * 0.3; // Rotate yacht based on active system
       }
     }
   });
@@ -185,44 +199,7 @@ function YachtScene() {
       handleUserInteraction(); // Disable auto-rotation on interaction
     };
     const onUp = async (e: PointerEvent) => {
-      // If a quick tap (no drag), dolly towards the tapped point
-      if (tap.end()) {
-        // Raycast to find the point under the cursor
-        const rc = new THREE.Raycaster();
-        const ndc = new THREE.Vector2(
-          (e.clientX / el.clientWidth) * 2 - 1,
-          -(e.clientY / el.clientHeight) * 2 + 1
-        );
-        rc.setFromCamera(ndc, camera);
-        // Intersect with scene; fall back to a point ahead if nothing
-        const hits = rc.intersectObjects(scene.children, true);
-        const target = new THREE.Vector3();
-        if (hits && hits.length > 0) target.copy(hits[0].point);
-        else target.set(0, 0, 0);
-
-        // Smoothly move camera closer to the target while keeping orbit target synced
-        const ctrl = controlsRef.current;
-        if (ctrl) {
-          const startPos = camera.position.clone();
-          const dir = target.clone().sub(startPos).normalize();
-          const newPos = target.clone().addScaledVector(dir, 1.6);
-
-          const startTarget = ctrl.target.clone();
-          const endTarget = target.clone();
-
-          const duration = 420; // ms
-          const t0 = performance.now();
-          const animate = () => {
-            const t = Math.min(1, (performance.now() - t0) / duration);
-            const ease = t * (2 - t); // easeOutQuad
-            camera.position.lerpVectors(startPos, newPos, ease);
-            ctrl.target.lerpVectors(startTarget, endTarget, ease);
-            ctrl.update();
-            if (t < 1) requestAnimationFrame(animate);
-          };
-          requestAnimationFrame(animate);
-        }
-      }
+      // No zoom on tap - just disable auto-rotation
     };
 
     el.addEventListener('pointerdown', onDown, { passive: true });
@@ -318,6 +295,11 @@ function YachtScene() {
       {/* Environment lighting */}
       <Environment preset='sunset' />
 
+      {/* 360 Systems Orbit */}
+      <Suspense fallback={null}>
+        <OrbitSystems />
+      </Suspense>
+
       {/* Controls: rotate + pinch-zoom; tap handled above */}
       <OrbitControls
         ref={controlsRef}
@@ -341,10 +323,128 @@ function YachtScene() {
   );
 }
 
+// -------- HUD Component --------
+function SystemHUD() {
+  const { activeSystem, systems } = useUI();
+  const activeSystemData = systems.find(s => s.id === activeSystem);
+
+  // Debug log removed for production
+
+  // Early return if not on client side or no active system
+  if (typeof window === 'undefined' || !activeSystemData) return null;
+
+  return (
+    <div className="absolute top-24 left-1/2 transform -translate-x-1/2 z-10">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="relative"
+      >
+        {/* Main HUD container - styled like topbar */}
+        <div
+          className="relative px-6 py-3 rounded-lg border border-gray-600 bg-gray-800"
+          style={{
+            color: '#cdd6df',
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            textAlign: 'center',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Subtle animated background gradient */}
+          <motion.div 
+            className="absolute inset-0 rounded-lg"
+            style={{
+              background: 'linear-gradient(90deg, transparent 0%, rgba(0, 255, 209, 0.05) 50%, transparent 100%)',
+            }}
+            animate={{
+              x: ['-100%', '100%'],
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+          
+          {/* Content */}
+          <div className="relative z-10">
+            {/* System name with subtle animation */}
+            <motion.div 
+              style={{ 
+                color: '#00ffd1', 
+                fontSize: '16px', 
+                fontWeight: '600',
+                marginBottom: '6px',
+                letterSpacing: '0.3px',
+              }}
+              animate={{ 
+                opacity: [0.8, 1, 0.8]
+              }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              {activeSystemData.label}
+            </motion.div>
+            
+            {/* Status and value with hover effects */}
+            <div className="flex items-center justify-center gap-3">
+              <motion.div 
+                className="px-2 py-1 rounded text-xs font-medium"
+                style={{ 
+                  background: 'rgba(0, 255, 209, 0.1)',
+                  color: '#00ffd1',
+                  border: '1px solid rgba(0, 255, 209, 0.2)',
+                }}
+                whileHover={{ 
+                  scale: 1.05,
+                  background: 'rgba(0, 255, 209, 0.15)',
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                {activeSystemData.status}
+              </motion.div>
+              
+              <div 
+                style={{ 
+                  fontSize: '10px', 
+                  opacity: 0.6,
+                  color: '#cdd6df',
+                }}
+              >
+                •
+              </div>
+              
+              <motion.div 
+                className="px-2 py-1 rounded text-xs font-medium"
+                style={{ 
+                  background: 'rgba(107, 114, 128, 0.1)',
+                  color: '#cdd6df',
+                  border: '1px solid rgba(107, 114, 128, 0.2)',
+                }}
+                whileHover={{ 
+                  scale: 1.05,
+                  background: 'rgba(107, 114, 128, 0.15)',
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                {activeSystemData.value}
+              </motion.div>
+            </div>
+          </div>
+          
+          {/* Corner accent removed */}
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 // -------- Public component --------
 export default function YachtCanvas() {
   return (
-    <div className='w-full h-[calc(100vh-4rem)] md:h-[80vh] rounded-lg overflow-hidden border border-gray-600 bg-gray-800 ios-fullscreen touch-none'>
+    <div className='w-full h-[calc(100vh-4rem)] md:h-[80vh] rounded-lg overflow-hidden border border-gray-600 bg-gray-800 ios-fullscreen touch-none relative'>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -367,6 +467,9 @@ export default function YachtCanvas() {
             <YachtScene />
           </Suspense>
         </Canvas>
+        
+        {/* System HUD */}
+        <SystemHUD />
       </motion.div>
     </div>
   );
