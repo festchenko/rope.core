@@ -45,7 +45,7 @@ function SystemCard({
   rotationY,
 }: SystemCardProps) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const baseScale = isActive ? 0.5 : 0.43; // В 2 раза меньше
+  const baseScale = isActive ? 0.65 : 0.56; // Увеличили на 30%
   const opacity = isActive ? 1.0 : 0.55;
 
   // Calculate perspective scale based on distance from camera
@@ -63,14 +63,14 @@ function SystemCard({
   // Animate scale, opacity and position
   useFrame(() => {
     if (meshRef.current) {
-      // Animate scale with perspective
+      // Animate scale with perspective - optimized for mobile
       meshRef.current.scale.lerp(
         new THREE.Vector3(finalScale, finalScale, finalScale),
-        0.1
+        0.05 // Slower for smoother animation on mobile
       );
 
       // Animate position - smooth movement to target position
-      meshRef.current.position.lerp(new THREE.Vector3(...position), 0.15);
+      meshRef.current.position.lerp(new THREE.Vector3(...position), 0.08); // Slower for smoother animation on mobile
     }
   });
 
@@ -94,12 +94,12 @@ function SystemCard({
               background: '#11161d',
               border: isActive ? '2px solid #00ffd1' : '1px solid #26303a',
               borderRadius: '12px',
-              padding: isActive ? '4px' : '3px', // В 2 раза меньше
-              minWidth: isActive ? '40px' : '30px', // В 2 раза меньше
+              padding: isActive ? '5px' : '4px', // Увеличили на 30%
+              minWidth: isActive ? '52px' : '39px', // Увеличили на 30%
               textAlign: 'center',
               color: '#cdd6df',
               fontFamily: 'system-ui, -apple-system, sans-serif',
-              fontSize: isActive ? '7px' : '6px', // В 2 раза меньше
+              fontSize: isActive ? '9px' : '8px', // Увеличили на 30%
               fontWeight: isActive ? '600' : '500',
               boxShadow: isActive
                 ? '0 0 25px rgba(0, 255, 209, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3)'
@@ -111,30 +111,30 @@ function SystemCard({
             <div
               style={{
                 color: isActive ? '#00ffd1' : '#00ffd1',
-                fontSize: isActive ? '5px' : '4px', // В 2 раза меньше
+                fontSize: isActive ? '7px' : '5px', // Увеличили на 30%
                 fontWeight: isActive ? '700' : '600',
-                marginBottom: isActive ? '2px' : '1px', // В 2 раза меньше
+                marginBottom: isActive ? '3px' : '1px', // Увеличили на 30%
                 textShadow: isActive
                   ? '0 0 10px rgba(0, 255, 209, 0.5)'
                   : 'none',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '2px', // В 2 раза меньше
+                gap: '3px', // Увеличили на 30%
               }}
             >
-              <span style={{ fontSize: isActive ? '6px' : '5px' }}>
+              <span style={{ fontSize: isActive ? '8px' : '7px' }}>
                 {' '}
-                {/* В 2 раза меньше */}
+                {/* Увеличили на 30% */}
                 {system.icon}
               </span>
               {system.label}
             </div>
             <div
               style={{
-                fontSize: isActive ? '4px' : '3px', // В 2 раза меньше
+                fontSize: isActive ? '5px' : '4px', // Увеличили на 30%
                 opacity: isActive ? 0.9 : 0.6,
-                marginBottom: isActive ? '1px' : '1px', // В 2 раза меньше
+                marginBottom: isActive ? '1px' : '1px', // Увеличили на 30%
                 fontWeight: isActive ? '500' : '400',
               }}
             >
@@ -142,7 +142,7 @@ function SystemCard({
             </div>
             <div
               style={{
-                fontSize: isActive ? '3px' : '3px', // В 2 раза меньше
+                fontSize: isActive ? '4px' : '4px', // Увеличили на 30%
                 opacity: isActive ? 0.8 : 0.5,
                 fontWeight: isActive ? '500' : '400',
               }}
@@ -172,6 +172,7 @@ export default function OrbitSystems() {
   // State for card appearance animation
   const [visibleCards, setVisibleCards] = React.useState<number>(0);
   const [isYachtLoaded, setIsYachtLoaded] = React.useState(false);
+  const [showHUD, setShowHUD] = React.useState(false);
 
   const gestureRef = useRef<{
     isDragging: boolean;
@@ -245,6 +246,10 @@ export default function OrbitSystems() {
       if (typeof window !== 'undefined') {
         setTimeout(() => {
           setIsYachtLoaded(true);
+          // Show HUD after yacht loads
+          setTimeout(() => {
+            setShowHUD(true);
+          }, 1000); // Show HUD 1 second after yacht loads
         }, 2000); // Wait 2 seconds for yacht to load
       }
     };
@@ -303,7 +308,7 @@ export default function OrbitSystems() {
   const systemPositions = systems.map((_, index) => {
     if (index === activeSystemIndex) {
       // Active card in center (in front of camera) - perfectly centered
-      return [0, 0, 1.8] as [number, number, number];
+      return [0, 0, 1.5] as [number, number, number];
     } else {
       // Other cards around the yacht - разнесены по вертикали
       const angle = index * angleStep + rotationY;

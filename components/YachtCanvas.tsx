@@ -327,11 +327,20 @@ function YachtScene() {
 function SystemHUD() {
   const { activeSystem, systems } = useUI();
   const activeSystemData = systems.find(s => s.id === activeSystem);
+  const [showHUD, setShowHUD] = React.useState(false);
 
-  // Debug log removed for production
+  // Show HUD after yacht loads
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setTimeout(() => {
+        setShowHUD(true);
+      }, 3000); // Show HUD 3 seconds after page load (after yacht loads)
+    }
+  }, []);
 
-  // Early return if not on client side or no active system
-  if (typeof window === 'undefined' || !activeSystemData) return null;
+  // Early return if not on client side or no active system or HUD not ready
+  if (typeof window === 'undefined' || !activeSystemData || !showHUD)
+    return null;
 
   return (
     <div className='absolute top-24 left-1/2 transform -translate-x-1/2 z-10'>
