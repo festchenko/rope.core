@@ -334,16 +334,16 @@ function SystemHUD() {
   if (typeof window === 'undefined' || !activeSystemData) return null;
 
   return (
-    <div className="absolute top-24 left-1/2 transform -translate-x-1/2 z-10">
+    <div className='absolute top-24 left-1/2 transform -translate-x-1/2 z-10'>
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-        className="relative"
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        className='relative'
       >
         {/* Main HUD container - styled like topbar */}
         <div
-          className="relative px-6 py-3 rounded-lg border border-gray-600 bg-gray-800"
+          className='relative px-6 py-3 rounded-lg border border-gray-600 bg-gray-800'
           style={{
             color: '#cdd6df',
             fontFamily: 'system-ui, -apple-system, sans-serif',
@@ -354,10 +354,11 @@ function SystemHUD() {
           }}
         >
           {/* Subtle animated background gradient */}
-          <motion.div 
-            className="absolute inset-0 rounded-lg"
+          <motion.div
+            className='absolute inset-0 rounded-lg'
             style={{
-              background: 'linear-gradient(90deg, transparent 0%, rgba(0, 255, 209, 0.05) 50%, transparent 100%)',
+              background:
+                'linear-gradient(90deg, transparent 0%, rgba(0, 255, 209, 0.05) 50%, transparent 100%)',
             }}
             animate={{
               x: ['-100%', '100%'],
@@ -365,39 +366,39 @@ function SystemHUD() {
             transition={{
               duration: 3,
               repeat: Infinity,
-              ease: "linear",
+              ease: 'linear',
             }}
           />
-          
+
           {/* Content */}
-          <div className="relative z-10">
+          <div className='relative z-10'>
             {/* System name with subtle animation */}
-            <motion.div 
-              style={{ 
-                color: '#00ffd1', 
-                fontSize: '16px', 
+            <motion.div
+              style={{
+                color: '#00ffd1',
+                fontSize: '16px',
                 fontWeight: '600',
                 marginBottom: '6px',
                 letterSpacing: '0.3px',
               }}
-              animate={{ 
-                opacity: [0.8, 1, 0.8]
+              animate={{
+                opacity: [0.8, 1, 0.8],
               }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             >
               {activeSystemData.label}
             </motion.div>
-            
+
             {/* Status and value with hover effects */}
-            <div className="flex items-center justify-center gap-3">
-              <motion.div 
-                className="px-2 py-1 rounded text-xs font-medium"
-                style={{ 
+            <div className='flex items-center justify-center gap-3'>
+              <motion.div
+                className='px-2 py-1 rounded text-xs font-medium'
+                style={{
                   background: 'rgba(0, 255, 209, 0.1)',
                   color: '#00ffd1',
                   border: '1px solid rgba(0, 255, 209, 0.2)',
                 }}
-                whileHover={{ 
+                whileHover={{
                   scale: 1.05,
                   background: 'rgba(0, 255, 209, 0.15)',
                 }}
@@ -405,25 +406,25 @@ function SystemHUD() {
               >
                 {activeSystemData.status}
               </motion.div>
-              
-              <div 
-                style={{ 
-                  fontSize: '10px', 
+
+              <div
+                style={{
+                  fontSize: '10px',
                   opacity: 0.6,
                   color: '#cdd6df',
                 }}
               >
                 •
               </div>
-              
-              <motion.div 
-                className="px-2 py-1 rounded text-xs font-medium"
-                style={{ 
+
+              <motion.div
+                className='px-2 py-1 rounded text-xs font-medium'
+                style={{
                   background: 'rgba(107, 114, 128, 0.1)',
                   color: '#cdd6df',
                   border: '1px solid rgba(107, 114, 128, 0.2)',
                 }}
-                whileHover={{ 
+                whileHover={{
                   scale: 1.05,
                   background: 'rgba(107, 114, 128, 0.15)',
                 }}
@@ -433,7 +434,7 @@ function SystemHUD() {
               </motion.div>
             </div>
           </div>
-          
+
           {/* Corner accent removed */}
         </div>
       </motion.div>
@@ -467,7 +468,7 @@ export default function YachtCanvas() {
             <YachtScene />
           </Suspense>
         </Canvas>
-        
+
         {/* System HUD */}
         <SystemHUD />
       </motion.div>

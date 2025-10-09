@@ -2,7 +2,7 @@
 
 /**
  * OrbitSystems - 360 Systems Mode Component
- * 
+ *
  * Features:
  * - Circular orbit of system cards around the yacht
  * - Touch/pointer gestures for rotation (mobile-friendly)
@@ -11,7 +11,7 @@
  * - Focused system card is larger and highlighted
  * - Cyan dashed line connects focused card to yacht anchor
  * - Yacht model rotates slightly with system selection
- * 
+ *
  * Usage:
  * - Swipe left/right on mobile to rotate and select systems
  * - Use arrow keys on desktop to navigate systems
@@ -38,21 +38,36 @@ interface SystemCardProps {
   rotationY: number;
 }
 
-function SystemCard({ system, position, isActive, rotationY }: SystemCardProps) {
+function SystemCard({
+  system,
+  position,
+  isActive,
+  rotationY,
+}: SystemCardProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const baseScale = isActive ? 1.0 : 0.86;
   const opacity = isActive ? 1.0 : 0.55;
 
   // Calculate perspective scale based on distance from camera
-  const distanceFromCamera = Math.sqrt(position[0] * position[0] + position[1] * position[1] + position[2] * position[2]);
-  const perspectiveScale = Math.max(0.3, Math.min(1.5, 2.5 / distanceFromCamera)); // Clamp between 0.3 and 1.5
+  const distanceFromCamera = Math.sqrt(
+    position[0] * position[0] +
+      position[1] * position[1] +
+      position[2] * position[2]
+  );
+  const perspectiveScale = Math.max(
+    0.3,
+    Math.min(1.5, 2.5 / distanceFromCamera)
+  ); // Clamp between 0.3 and 1.5
   const finalScale = baseScale * perspectiveScale;
 
   // Animate scale, opacity and position
   useFrame(() => {
     if (meshRef.current) {
       // Animate scale with perspective
-      meshRef.current.scale.lerp(new THREE.Vector3(finalScale, finalScale, finalScale), 0.1);
+      meshRef.current.scale.lerp(
+        new THREE.Vector3(finalScale, finalScale, finalScale),
+        0.1
+      );
 
       // Animate position - smooth movement to target position
       meshRef.current.position.lerp(new THREE.Vector3(...position), 0.15);
@@ -62,18 +77,19 @@ function SystemCard({ system, position, isActive, rotationY }: SystemCardProps) 
   return (
     <group>
       <mesh ref={meshRef}>
-            <Html
-              center
-              distanceFactor={8}
-              style={{
-                transform: `scale(${finalScale})`,
-                opacity: opacity,
-                transition: 'opacity 0.4s ease, transform 0.4s ease, filter 0.4s ease',
-                filter: isActive ? 'none' : 'blur(2px)',
-              }}
+        <Html
+          center
+          distanceFactor={8}
+          style={{
+            transform: `scale(${finalScale})`,
+            opacity: opacity,
+            transition:
+              'opacity 0.4s ease, transform 0.4s ease, filter 0.4s ease',
+            filter: isActive ? 'none' : 'blur(2px)',
+          }}
         >
           <div
-            className="system-card"
+            className='system-card'
             style={{
               background: '#11161d',
               border: isActive ? '2px solid #00ffd1' : '1px solid #26303a',
@@ -85,40 +101,50 @@ function SystemCard({ system, position, isActive, rotationY }: SystemCardProps) 
               fontFamily: 'system-ui, -apple-system, sans-serif',
               fontSize: isActive ? '8px' : '7px',
               fontWeight: isActive ? '600' : '500',
-              boxShadow: isActive 
-                ? '0 0 25px rgba(0, 255, 209, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3)' 
+              boxShadow: isActive
+                ? '0 0 25px rgba(0, 255, 209, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3)'
                 : '0 2px 8px rgba(0, 0, 0, 0.2)',
               transform: isActive ? 'translateY(-4px)' : 'translateY(0)',
               transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
-            <div style={{ 
-              color: isActive ? '#00ffd1' : '#00ffd1', 
-              fontSize: isActive ? '9px' : '7px', 
-              fontWeight: isActive ? '700' : '600',
-              marginBottom: isActive ? '5px' : '3px',
-              textShadow: isActive ? '0 0 10px rgba(0, 255, 209, 0.5)' : 'none',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '4px'
-            }}>
-              <span style={{ fontSize: isActive ? '10px' : '8px' }}>{system.icon}</span>
+            <div
+              style={{
+                color: isActive ? '#00ffd1' : '#00ffd1',
+                fontSize: isActive ? '9px' : '7px',
+                fontWeight: isActive ? '700' : '600',
+                marginBottom: isActive ? '5px' : '3px',
+                textShadow: isActive
+                  ? '0 0 10px rgba(0, 255, 209, 0.5)'
+                  : 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '4px',
+              }}
+            >
+              <span style={{ fontSize: isActive ? '10px' : '8px' }}>
+                {system.icon}
+              </span>
               {system.label}
             </div>
-            <div style={{ 
-              fontSize: isActive ? '7px' : '6px', 
-              opacity: isActive ? 0.9 : 0.6,
-              marginBottom: isActive ? '3px' : '2px',
-              fontWeight: isActive ? '500' : '400'
-            }}>
+            <div
+              style={{
+                fontSize: isActive ? '7px' : '6px',
+                opacity: isActive ? 0.9 : 0.6,
+                marginBottom: isActive ? '3px' : '2px',
+                fontWeight: isActive ? '500' : '400',
+              }}
+            >
               {system.status}
             </div>
-            <div style={{ 
-              fontSize: isActive ? '6px' : '5px', 
-              opacity: isActive ? 0.8 : 0.5,
-              fontWeight: isActive ? '500' : '400'
-            }}>
+            <div
+              style={{
+                fontSize: isActive ? '6px' : '5px',
+                opacity: isActive ? 0.8 : 0.5,
+                fontWeight: isActive ? '500' : '400',
+              }}
+            >
               {system.value}
             </div>
           </div>
@@ -132,13 +158,13 @@ function SystemCard({ system, position, isActive, rotationY }: SystemCardProps) 
 
 export default function OrbitSystems() {
   const { camera, gl } = useThree();
-  const { 
-    activeSystem, 
-    rotationY, 
-    systems, 
-    setRotationY, 
+  const {
+    activeSystem,
+    rotationY,
+    systems,
+    setRotationY,
     setActiveSystem,
-    snapToNearestSystem 
+    snapToNearestSystem,
   } = useUI();
 
   // Early return if not on client side
@@ -147,7 +173,7 @@ export default function OrbitSystems() {
   }
 
   // Debug log removed for production
-  
+
   const gestureRef = useRef<{
     isDragging: boolean;
     startX: number;
@@ -202,14 +228,14 @@ export default function OrbitSystems() {
   const handlePointerUp = useCallback(() => {
     if (gestureRef.current.isDragging) {
       gestureRef.current.isDragging = false;
-      
+
       const deltaX = gestureRef.current.lastX - gestureRef.current.startX;
       const threshold = 50; // Minimum swipe distance
-      
+
       if (Math.abs(deltaX) > threshold) {
         const currentIndex = systems.findIndex(s => s.id === activeSystem);
         let newIndex;
-        
+
         if (deltaX > 0) {
           // Swipe right - go to previous system
           newIndex = (currentIndex - 1 + systems.length) % systems.length;
@@ -217,45 +243,54 @@ export default function OrbitSystems() {
           // Swipe left - go to next system
           newIndex = (currentIndex + 1) % systems.length;
         }
-        
+
         setActiveSystem(systems[newIndex].id);
       }
     }
   }, [activeSystem, systems, setActiveSystem]);
 
   // Keyboard controls for desktop testing
-  const handleKeyDown = useCallback((event: KeyboardEvent) => {
-    if (event.key === 'ArrowLeft') {
-      const currentIndex = systems.findIndex(s => s.id === activeSystem);
-      const prevIndex = (currentIndex - 1 + systems.length) % systems.length;
-      setActiveSystem(systems[prevIndex].id);
-    } else if (event.key === 'ArrowRight') {
-      const currentIndex = systems.findIndex(s => s.id === activeSystem);
-      const nextIndex = (currentIndex + 1) % systems.length;
-      setActiveSystem(systems[nextIndex].id);
-    }
-  }, [activeSystem, systems, setActiveSystem]);
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        const currentIndex = systems.findIndex(s => s.id === activeSystem);
+        const prevIndex = (currentIndex - 1 + systems.length) % systems.length;
+        setActiveSystem(systems[prevIndex].id);
+      } else if (event.key === 'ArrowRight') {
+        const currentIndex = systems.findIndex(s => s.id === activeSystem);
+        const nextIndex = (currentIndex + 1) % systems.length;
+        setActiveSystem(systems[nextIndex].id);
+      }
+    },
+    [activeSystem, systems, setActiveSystem]
+  );
 
   // Event listeners
   useEffect(() => {
     const canvas = gl.domElement;
-    
+
     canvas.addEventListener('pointerdown', handlePointerDown);
     canvas.addEventListener('pointermove', handlePointerMove);
     canvas.addEventListener('pointerup', handlePointerUp);
     canvas.addEventListener('pointercancel', handlePointerUp);
-    
+
     window.addEventListener('keydown', handleKeyDown);
-    
+
     return () => {
       canvas.removeEventListener('pointerdown', handlePointerDown);
       canvas.removeEventListener('pointermove', handlePointerMove);
       canvas.removeEventListener('pointerup', handlePointerUp);
       canvas.removeEventListener('pointercancel', handlePointerUp);
-      
+
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [gl.domElement, handlePointerDown, handlePointerMove, handlePointerUp, handleKeyDown]);
+  }, [
+    gl.domElement,
+    handlePointerDown,
+    handlePointerMove,
+    handlePointerUp,
+    handleKeyDown,
+  ]);
 
   return (
     <group>
@@ -269,7 +304,7 @@ export default function OrbitSystems() {
           rotationY={rotationY}
         />
       ))}
-      
+
       {/* Pointer Line removed as requested */}
     </group>
   );
