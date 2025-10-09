@@ -66,11 +66,11 @@ function SystemCard({
       // Animate scale with perspective - optimized for mobile
       meshRef.current.scale.lerp(
         new THREE.Vector3(finalScale, finalScale, finalScale),
-        0.05 // Slower for smoother animation on mobile
+        0.02 // Much slower for smoother animation on mobile
       );
 
       // Animate position - smooth movement to target position
-      meshRef.current.position.lerp(new THREE.Vector3(...position), 0.08); // Slower for smoother animation on mobile
+      meshRef.current.position.lerp(new THREE.Vector3(...position), 0.03); // Much slower for smoother animation on mobile
     }
   });
 
@@ -84,7 +84,7 @@ function SystemCard({
             transform: `scale(${finalScale})`,
             opacity: opacity,
             transition:
-              'opacity 0.4s ease, transform 0.4s ease, filter 0.4s ease',
+              'opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease',
             filter: isActive ? 'none' : 'blur(2px)',
           }}
         >
@@ -105,7 +105,7 @@ function SystemCard({
                 ? '0 0 25px rgba(0, 255, 209, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3)'
                 : '0 2px 8px rgba(0, 0, 0, 0.2)',
               transform: isActive ? 'translateY(-4px)' : 'translateY(0)',
-              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
             <div
@@ -246,11 +246,7 @@ export default function OrbitSystems() {
       if (typeof window !== 'undefined') {
         setTimeout(() => {
           setIsYachtLoaded(true);
-          // Show HUD after yacht loads
-          setTimeout(() => {
-            setShowHUD(true);
-          }, 1000); // Show HUD 1 second after yacht loads
-        }, 2000); // Wait 2 seconds for yacht to load
+        }, 3000); // Wait 3 seconds for yacht to load
       }
     };
 
@@ -262,7 +258,7 @@ export default function OrbitSystems() {
     if (isYachtLoaded && visibleCards < systems.length) {
       const timer = setTimeout(() => {
         setVisibleCards(prev => prev + 1);
-      }, 100); // Show one card every 100ms
+      }, 200); // Show one card every 200ms for smoother effect
 
       return () => clearTimeout(timer);
     }
