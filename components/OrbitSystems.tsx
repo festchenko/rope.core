@@ -45,7 +45,7 @@ function SystemCard({
   rotationY,
 }: SystemCardProps) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const baseScale = isActive ? 0.33 : 0.28; // В 3 раза меньше
+  const baseScale = isActive ? 0.5 : 0.43; // В 2 раза меньше
   const opacity = isActive ? 1.0 : 0.55;
 
   // Calculate perspective scale based on distance from camera
@@ -94,12 +94,12 @@ function SystemCard({
               background: '#11161d',
               border: isActive ? '2px solid #00ffd1' : '1px solid #26303a',
               borderRadius: '12px',
-              padding: isActive ? '3px' : '2px', // В 3 раза меньше
-              minWidth: isActive ? '26px' : '20px', // В 3 раза меньше
+              padding: isActive ? '4px' : '3px', // В 2 раза меньше
+              minWidth: isActive ? '40px' : '30px', // В 2 раза меньше
               textAlign: 'center',
               color: '#cdd6df',
               fontFamily: 'system-ui, -apple-system, sans-serif',
-              fontSize: isActive ? '6px' : '5px', // В 3 раза меньше
+              fontSize: isActive ? '7px' : '6px', // В 2 раза меньше
               fontWeight: isActive ? '600' : '500',
               boxShadow: isActive
                 ? '0 0 25px rgba(0, 255, 209, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3)'
@@ -111,28 +111,30 @@ function SystemCard({
             <div
               style={{
                 color: isActive ? '#00ffd1' : '#00ffd1',
-                fontSize: isActive ? '3px' : '2px', // В 3 раза меньше
+                fontSize: isActive ? '5px' : '4px', // В 2 раза меньше
                 fontWeight: isActive ? '700' : '600',
-                marginBottom: isActive ? '1px' : '1px', // В 3 раза меньше
+                marginBottom: isActive ? '2px' : '1px', // В 2 раза меньше
                 textShadow: isActive
                   ? '0 0 10px rgba(0, 255, 209, 0.5)'
                   : 'none',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '1px', // В 3 раза меньше
+                gap: '2px', // В 2 раза меньше
               }}
             >
-              <span style={{ fontSize: isActive ? '4px' : '3px' }}> {/* В 3 раза меньше */}
+              <span style={{ fontSize: isActive ? '6px' : '5px' }}>
+                {' '}
+                {/* В 2 раза меньше */}
                 {system.icon}
               </span>
               {system.label}
             </div>
             <div
               style={{
-                fontSize: isActive ? '2px' : '2px', // В 3 раза меньше
+                fontSize: isActive ? '4px' : '3px', // В 2 раза меньше
                 opacity: isActive ? 0.9 : 0.6,
-                marginBottom: isActive ? '1px' : '1px', // В 3 раза меньше
+                marginBottom: isActive ? '1px' : '1px', // В 2 раза меньше
                 fontWeight: isActive ? '500' : '400',
               }}
             >
@@ -140,7 +142,7 @@ function SystemCard({
             </div>
             <div
               style={{
-                fontSize: isActive ? '2px' : '2px', // В 3 раза меньше
+                fontSize: isActive ? '3px' : '3px', // В 2 раза меньше
                 opacity: isActive ? 0.8 : 0.5,
                 fontWeight: isActive ? '500' : '400',
               }}
@@ -166,6 +168,10 @@ export default function OrbitSystems() {
     setActiveSystem,
     snapToNearestSystem,
   } = useUI();
+
+  // State for card appearance animation
+  const [visibleCards, setVisibleCards] = React.useState<number>(0);
+  const [isYachtLoaded, setIsYachtLoaded] = React.useState(false);
 
   const gestureRef = useRef<{
     isDragging: boolean;
@@ -232,6 +238,31 @@ export default function OrbitSystems() {
     [activeSystem, systems, setActiveSystem]
   );
 
+  // Check if yacht is loaded (look for yacht model in scene)
+  useEffect(() => {
+    const checkYachtLoaded = () => {
+      // Simple check - if we're on client side and have been running for a bit
+      if (typeof window !== 'undefined') {
+        setTimeout(() => {
+          setIsYachtLoaded(true);
+        }, 2000); // Wait 2 seconds for yacht to load
+      }
+    };
+
+    checkYachtLoaded();
+  }, []);
+
+  // Animate cards appearing one by one after yacht loads
+  useEffect(() => {
+    if (isYachtLoaded && visibleCards < systems.length) {
+      const timer = setTimeout(() => {
+        setVisibleCards(prev => prev + 1);
+      }, 100); // Show one card every 100ms
+
+      return () => clearTimeout(timer);
+    }
+  }, [isYachtLoaded, visibleCards, systems.length]);
+
   // Event listeners
   useEffect(() => {
     const canvas = gl.domElement;
@@ -287,16 +318,20 @@ export default function OrbitSystems() {
 
   return (
     <group>
-      {/* System Cards */}
-      {systems.map((system, index) => (
-        <SystemCard
-          key={system.id}
-          system={system}
-          position={systemPositions[index]}
-          isActive={system.id === activeSystem}
-          rotationY={rotationY}
-        />
-      ))}
+      {/* System Cards - only show visible cards */}
+      {systems.map((system, index) => {
+        if (index >= visibleCards) return null; // Don't render if not visible yet
+
+        return (
+          <SystemCard
+            key={system.id}
+            system={system}
+            position={systemPositions[index]}
+            isActive={system.id === activeSystem}
+            rotationY={rotationY}
+          />
+        );
+      })}
 
       {/* Pointer Line removed as requested */}
     </group>
