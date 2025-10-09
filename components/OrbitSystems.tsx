@@ -45,7 +45,7 @@ function SystemCard({
   rotationY,
 }: SystemCardProps) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const baseScale = isActive ? 1.0 : 0.86;
+  const baseScale = isActive ? 0.33 : 0.28; // В 3 раза меньше
   const opacity = isActive ? 1.0 : 0.55;
 
   // Calculate perspective scale based on distance from camera
@@ -55,9 +55,9 @@ function SystemCard({
       position[2] * position[2]
   );
   const perspectiveScale = Math.max(
-    0.3,
-    Math.min(1.5, 2.5 / distanceFromCamera)
-  ); // Clamp between 0.3 and 1.5
+    0.2,
+    Math.min(0.8, 1.5 / distanceFromCamera)
+  ); // Уменьшенный диапазон
   const finalScale = baseScale * perspectiveScale;
 
   // Animate scale, opacity and position
@@ -94,12 +94,12 @@ function SystemCard({
               background: '#11161d',
               border: isActive ? '2px solid #00ffd1' : '1px solid #26303a',
               borderRadius: '12px',
-              padding: isActive ? '9px' : '7px',
-              minWidth: isActive ? '80px' : '60px',
+              padding: isActive ? '3px' : '2px', // В 3 раза меньше
+              minWidth: isActive ? '26px' : '20px', // В 3 раза меньше
               textAlign: 'center',
               color: '#cdd6df',
               fontFamily: 'system-ui, -apple-system, sans-serif',
-              fontSize: isActive ? '8px' : '7px',
+              fontSize: isActive ? '6px' : '5px', // В 3 раза меньше
               fontWeight: isActive ? '600' : '500',
               boxShadow: isActive
                 ? '0 0 25px rgba(0, 255, 209, 0.4), 0 8px 20px rgba(0, 0, 0, 0.3)'
@@ -111,28 +111,28 @@ function SystemCard({
             <div
               style={{
                 color: isActive ? '#00ffd1' : '#00ffd1',
-                fontSize: isActive ? '9px' : '7px',
+                fontSize: isActive ? '3px' : '2px', // В 3 раза меньше
                 fontWeight: isActive ? '700' : '600',
-                marginBottom: isActive ? '5px' : '3px',
+                marginBottom: isActive ? '1px' : '1px', // В 3 раза меньше
                 textShadow: isActive
                   ? '0 0 10px rgba(0, 255, 209, 0.5)'
                   : 'none',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '4px',
+                gap: '1px', // В 3 раза меньше
               }}
             >
-              <span style={{ fontSize: isActive ? '10px' : '8px' }}>
+              <span style={{ fontSize: isActive ? '4px' : '3px' }}> {/* В 3 раза меньше */}
                 {system.icon}
               </span>
               {system.label}
             </div>
             <div
               style={{
-                fontSize: isActive ? '7px' : '6px',
+                fontSize: isActive ? '2px' : '2px', // В 3 раза меньше
                 opacity: isActive ? 0.9 : 0.6,
-                marginBottom: isActive ? '3px' : '2px',
+                marginBottom: isActive ? '1px' : '1px', // В 3 раза меньше
                 fontWeight: isActive ? '500' : '400',
               }}
             >
@@ -140,7 +140,7 @@ function SystemCard({
             </div>
             <div
               style={{
-                fontSize: isActive ? '6px' : '5px',
+                fontSize: isActive ? '2px' : '2px', // В 3 раза меньше
                 opacity: isActive ? 0.8 : 0.5,
                 fontWeight: isActive ? '500' : '400',
               }}
@@ -264,7 +264,7 @@ export default function OrbitSystems() {
     return null;
   }
 
-  const orbitRadius = 1.2; // Увеличиваем радиус для лучшей видимости
+  const orbitRadius = 1.5; // Увеличиваем радиус для лучшего разделения
   const angleStep = (2 * Math.PI) / systems.length;
 
   // Calculate system positions - active card in center, others around
@@ -274,11 +274,12 @@ export default function OrbitSystems() {
       // Active card in center (in front of camera) - perfectly centered
       return [0, 0, 1.8] as [number, number, number];
     } else {
-      // Other cards around the yacht
+      // Other cards around the yacht - разнесены по вертикали
       const angle = index * angleStep + rotationY;
+      const verticalOffset = (index % 3) * 0.4 - 0.4; // 3 уровня по вертикали
       return [
         Math.cos(angle) * orbitRadius,
-        0.3,
+        0.3 + verticalOffset, // Разные высоты
         Math.sin(angle) * orbitRadius,
       ] as [number, number, number];
     }
