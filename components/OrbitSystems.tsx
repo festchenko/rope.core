@@ -205,34 +205,90 @@ export default function OrbitSystems() {
     gestureRef.current.lastX = event.clientX;
   }, []);
 
-  const handlePointerUp = useCallback((event: PointerEvent) => {
-    if (gestureRef.current.isDragging) {
-      gestureRef.current.isDragging = false;
-      // Prevent default to avoid scrolling
-      event.preventDefault();
+  const handlePointerUp = useCallback(
+    (event: PointerEvent) => {
+      if (gestureRef.current.isDragging) {
+        gestureRef.current.isDragging = false;
+        // Prevent default to avoid scrolling
+        event.preventDefault();
 
-      const deltaX = gestureRef.current.lastX - gestureRef.current.startX;
-      const threshold = 80; // Increased threshold for touch screens
-      const currentTime = Date.now();
-      const minSwitchInterval = 300; // Minimum 300ms between switches
+        const deltaX = gestureRef.current.lastX - gestureRef.current.startX;
+        const threshold = 80; // Increased threshold for touch screens
+        const currentTime = Date.now();
+        const minSwitchInterval = 300; // Minimum 300ms between switches
 
-      if (Math.abs(deltaX) > threshold && (currentTime - gestureRef.current.lastSwitchTime) > minSwitchInterval) {
-        const currentIndex = systems.findIndex(s => s.id === activeSystem);
-        let newIndex;
+        if (
+          Math.abs(deltaX) > threshold &&
+          currentTime - gestureRef.current.lastSwitchTime > minSwitchInterval
+        ) {
+          const currentIndex = systems.findIndex(s => s.id === activeSystem);
+          let newIndex;
 
-        if (deltaX > 0) {
-          // Swipe right - go to previous system
-          newIndex = (currentIndex - 1 + systems.length) % systems.length;
-        } else {
-          // Swipe left - go to next system
-          newIndex = (currentIndex + 1) % systems.length;
+          if (deltaX > 0) {
+            // Swipe right - go to previous system
+            newIndex = (currentIndex - 1 + systems.length) % systems.length;
+          } else {
+            // Swipe left - go to next system
+            newIndex = (currentIndex + 1) % systems.length;
+          }
+
+          gestureRef.current.lastSwitchTime = currentTime;
+          setActiveSystem(systems[newIndex].id);
         }
-
-        gestureRef.current.lastSwitchTime = currentTime;
-        setActiveSystem(systems[newIndex].id);
       }
-    }
-  }, [activeSystem, systems, setActiveSystem]);
+    },
+    [activeSystem, systems, setActiveSystem]
+  );
+
+  // Touch event handlers
+  const handleTouchStart = useCallback((event: TouchEvent) => {
+    event.preventDefault();
+    const touch = event.touches[0];
+    gestureRef.current.isDragging = true;
+    gestureRef.current.startX = touch.clientX;
+    gestureRef.current.lastX = touch.clientX;
+  }, []);
+
+  const handleTouchMove = useCallback((event: TouchEvent) => {
+    if (!gestureRef.current.isDragging) return;
+    event.preventDefault();
+    const touch = event.touches[0];
+    gestureRef.current.lastX = touch.clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback(
+    (event: TouchEvent) => {
+      if (gestureRef.current.isDragging) {
+        gestureRef.current.isDragging = false;
+        event.preventDefault();
+
+        const deltaX = gestureRef.current.lastX - gestureRef.current.startX;
+        const threshold = 80; // Increased threshold for touch screens
+        const currentTime = Date.now();
+        const minSwitchInterval = 300; // Minimum 300ms between switches
+
+        if (
+          Math.abs(deltaX) > threshold &&
+          currentTime - gestureRef.current.lastSwitchTime > minSwitchInterval
+        ) {
+          const currentIndex = systems.findIndex(s => s.id === activeSystem);
+          let newIndex;
+
+          if (deltaX > 0) {
+            // Swipe right - go to previous system
+            newIndex = (currentIndex - 1 + systems.length) % systems.length;
+          } else {
+            // Swipe left - go to next system
+            newIndex = (currentIndex + 1) % systems.length;
+          }
+
+          gestureRef.current.lastSwitchTime = currentTime;
+          setActiveSystem(systems[newIndex].id);
+        }
+      }
+    },
+    [activeSystem, systems, setActiveSystem]
+  );
 
   // Keyboard controls for desktop testing
   const handleKeyDown = useCallback(
@@ -280,25 +336,33 @@ export default function OrbitSystems() {
     const canvas = gl.domElement;
 
     // Touch events for mobile
-    canvas.addEventListener('touchstart', handlePointerDown, { passive: false });
-    canvas.addEventListener('touchmove', handlePointerMove, { passive: false });
-    canvas.addEventListener('touchend', handlePointerUp, { passive: false });
-    canvas.addEventListener('touchcancel', handlePointerUp, { passive: false });
+    canvas.addEventListener('touchstart', handleTouchStart, {
+      passive: false,
+    });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+    canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
 
     // Pointer events for desktop
-    canvas.addEventListener('pointerdown', handlePointerDown, { passive: false });
-    canvas.addEventListener('pointermove', handlePointerMove, { passive: false });
+    canvas.addEventListener('pointerdown', handlePointerDown, {
+      passive: false,
+    });
+    canvas.addEventListener('pointermove', handlePointerMove, {
+      passive: false,
+    });
     canvas.addEventListener('pointerup', handlePointerUp, { passive: false });
-    canvas.addEventListener('pointercancel', handlePointerUp, { passive: false });
+    canvas.addEventListener('pointercancel', handlePointerUp, {
+      passive: false,
+    });
 
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       // Touch events
-      canvas.removeEventListener('touchstart', handlePointerDown);
-      canvas.removeEventListener('touchmove', handlePointerMove);
-      canvas.removeEventListener('touchend', handlePointerUp);
-      canvas.removeEventListener('touchcancel', handlePointerUp);
+      canvas.removeEventListener('touchstart', handleTouchStart);
+      canvas.removeEventListener('touchmove', handleTouchMove);
+      canvas.removeEventListener('touchend', handleTouchEnd);
+      canvas.removeEventListener('touchcancel', handleTouchEnd);
 
       // Pointer events
       canvas.removeEventListener('pointerdown', handlePointerDown);
@@ -310,6 +374,9 @@ export default function OrbitSystems() {
     };
   }, [
     gl.domElement,
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
     handlePointerDown,
     handlePointerMove,
     handlePointerUp,

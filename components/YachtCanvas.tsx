@@ -459,10 +459,13 @@ function GlobalLoader() {
 // -------- Public component --------
 export default function YachtCanvas() {
   return (
-    <div className='w-full h-[calc(100vh-4rem)] md:h-[80vh] rounded-lg overflow-hidden border border-gray-600 bg-gray-800 ios-fullscreen touch-none relative' style={{ touchAction: 'none', overscrollBehavior: 'none' }}>
+    <div
+      className='w-full h-[calc(100vh-4rem)] md:h-[80vh] rounded-lg overflow-hidden border border-gray-600 bg-gray-800 ios-fullscreen touch-none relative'
+      style={{ touchAction: 'none', overscrollBehavior: 'none' }}
+    >
       {/* Global Loader */}
       <GlobalLoader />
-      
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
