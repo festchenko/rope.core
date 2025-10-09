@@ -167,13 +167,6 @@ export default function OrbitSystems() {
     snapToNearestSystem,
   } = useUI();
 
-  // Early return if not on client side
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  // Debug log removed for production
-
   const gestureRef = useRef<{
     isDragging: boolean;
     startX: number;
@@ -185,32 +178,6 @@ export default function OrbitSystems() {
     startRotation: 0,
     lastX: 0,
   });
-
-  const orbitRadius = 1.2; // Увеличиваем радиус для лучшей видимости
-  const angleStep = (2 * Math.PI) / systems.length;
-
-  // Calculate system positions - active card in center, others around
-  const activeSystemIndex = systems.findIndex(s => s.id === activeSystem);
-  const systemPositions = systems.map((_, index) => {
-    if (index === activeSystemIndex) {
-      // Active card in center (in front of camera) - perfectly centered
-      return [0, 0, 1.8] as [number, number, number];
-    } else {
-      // Other cards around the yacht
-      const angle = index * angleStep + rotationY;
-      return [
-        Math.cos(angle) * orbitRadius,
-        0.3,
-        Math.sin(angle) * orbitRadius,
-      ] as [number, number, number];
-    }
-  });
-
-  // Debug log removed for production
-
-  // Active system position and anchor variables removed (no longer needed)
-
-  // Debug log removed for production
 
   // Gesture handling - now we switch systems instead of rotating
   const handlePointerDown = useCallback((event: PointerEvent) => {
@@ -291,6 +258,31 @@ export default function OrbitSystems() {
     handlePointerUp,
     handleKeyDown,
   ]);
+
+  // Early return if not on client side
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const orbitRadius = 1.2; // Увеличиваем радиус для лучшей видимости
+  const angleStep = (2 * Math.PI) / systems.length;
+
+  // Calculate system positions - active card in center, others around
+  const activeSystemIndex = systems.findIndex(s => s.id === activeSystem);
+  const systemPositions = systems.map((_, index) => {
+    if (index === activeSystemIndex) {
+      // Active card in center (in front of camera) - perfectly centered
+      return [0, 0, 1.8] as [number, number, number];
+    } else {
+      // Other cards around the yacht
+      const angle = index * angleStep + rotationY;
+      return [
+        Math.cos(angle) * orbitRadius,
+        0.3,
+        Math.sin(angle) * orbitRadius,
+      ] as [number, number, number];
+    }
+  });
 
   return (
     <group>
