@@ -243,67 +243,7 @@ function YachtScene() {
       />
 
       {/* Model */}
-      <Suspense
-        fallback={
-          <Html center>
-            <div className='flex flex-col items-center justify-center space-y-8'>
-              {/* Beautiful yacht loading animation */}
-              <div className='relative'>
-                {/* Outer ring */}
-                <div className='w-24 h-24 border-4 border-white/10 rounded-full animate-spin border-t-accent'></div>
-                {/* Middle ring */}
-                <div
-                  className='absolute inset-2 w-20 h-20 border-3 border-transparent rounded-full animate-spin border-t-accent/60'
-                  style={{
-                    animationDirection: 'reverse',
-                    animationDuration: '2s',
-                  }}
-                ></div>
-                {/* Inner ring */}
-                <div
-                  className='absolute inset-4 w-16 h-16 border-2 border-transparent rounded-full animate-spin border-t-accent/40'
-                  style={{ animationDuration: '1.5s' }}
-                ></div>
-                {/* Center yacht icon */}
-                <div className='absolute inset-0 flex items-center justify-center'>
-                  <div className='text-accent text-2xl font-bold animate-pulse'>
-                    ⛵
-                  </div>
-                </div>
-              </div>
-
-              {/* Loading text with gradient */}
-              <div className='text-xl font-semibold bg-gradient-to-r from-accent via-white to-accent bg-clip-text text-transparent tracking-wide animate-pulse'>
-                Loading Yacht Systems...
-              </div>
-
-              {/* Animated progress bar */}
-              <div className='w-48 h-2 bg-white/10 rounded-full overflow-hidden'>
-                <div
-                  className='h-full bg-gradient-to-r from-accent via-accent/80 to-accent/60 rounded-full animate-pulse-glow'
-                  style={{ width: '100%' }}
-                ></div>
-              </div>
-
-              {/* Loading dots */}
-              <div className='flex space-x-2'>
-                <div
-                  className='w-2 h-2 bg-accent rounded-full animate-bounce'
-                  style={{ animationDelay: '0ms' }}
-                ></div>
-                <div
-                  className='w-2 h-2 bg-accent rounded-full animate-bounce'
-                  style={{ animationDelay: '150ms' }}
-                ></div>
-                <div
-                  className='w-2 h-2 bg-accent rounded-full animate-bounce'
-                  style={{ animationDelay: '300ms' }}
-                ></div>
-              </div>
-            </div>
-          </Html>
-        }
-      >
+      <Suspense fallback={null}>
         <group position={[0, -0.3, 0]}>
           <YachtModel />
         </group>
@@ -367,7 +307,7 @@ function SystemHUD() {
     if (typeof window !== 'undefined') {
       setTimeout(() => {
         setShowHUD(true);
-      }, 5000); // Show HUD 5 seconds after page load (after yacht and cards load)
+      }, 8000); // Show HUD 8 seconds after page load (after yacht and cards load)
     }
   }, []);
 
@@ -484,10 +424,45 @@ function SystemHUD() {
   );
 }
 
+// -------- Global Loading Component --------
+function GlobalLoader() {
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Show loader for 6 seconds total
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 6000);
+    }
+  }, []);
+
+  if (!isLoading) return null;
+
+  return (
+    <div className='absolute inset-0 z-50 flex items-center justify-center bg-gray-900'>
+      <div className='flex flex-col items-center justify-center space-y-6'>
+        {/* Minimalist spinner */}
+        <div className='relative'>
+          <div className='w-8 h-8 border-2 border-gray-600 rounded-full animate-spin border-t-accent'></div>
+        </div>
+
+        {/* Simple loading text */}
+        <div className='text-sm font-medium text-gray-400 tracking-wide'>
+          Loading...
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // -------- Public component --------
 export default function YachtCanvas() {
   return (
-    <div className='w-full h-[calc(100vh-4rem)] md:h-[80vh] rounded-lg overflow-hidden border border-gray-600 bg-gray-800 ios-fullscreen touch-none relative'>
+    <div className='w-full h-[calc(100vh-4rem)] md:h-[80vh] rounded-lg overflow-hidden border border-gray-600 bg-gray-800 ios-fullscreen touch-none relative' style={{ touchAction: 'none', overscrollBehavior: 'none' }}>
+      {/* Global Loader */}
+      <GlobalLoader />
+      
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

@@ -179,15 +179,19 @@ export default function OrbitSystems() {
     startX: number;
     startRotation: number;
     lastX: number;
+    lastSwitchTime: number;
   }>({
     isDragging: false,
     startX: 0,
     startRotation: 0,
     lastX: 0,
+    lastSwitchTime: 0,
   });
 
-  // Gesture handling - now we switch systems instead of rotating
+  // Gesture handling - optimized for touch screens
   const handlePointerDown = useCallback((event: PointerEvent) => {
+    // Prevent default to avoid scrolling
+    event.preventDefault();
     gestureRef.current.isDragging = true;
     gestureRef.current.startX = event.clientX;
     gestureRef.current.lastX = event.clientX;
@@ -195,18 +199,24 @@ export default function OrbitSystems() {
 
   const handlePointerMove = useCallback((event: PointerEvent) => {
     if (!gestureRef.current.isDragging) return;
+    // Prevent default to avoid scrolling
+    event.preventDefault();
     // Just track movement, we'll handle switching on pointer up
     gestureRef.current.lastX = event.clientX;
   }, []);
 
-  const handlePointerUp = useCallback(() => {
+  const handlePointerUp = useCallback((event: PointerEvent) => {
     if (gestureRef.current.isDragging) {
       gestureRef.current.isDragging = false;
+      // Prevent default to avoid scrolling
+      event.preventDefault();
 
       const deltaX = gestureRef.current.lastX - gestureRef.current.startX;
-      const threshold = 50; // Minimum swipe distance
+      const threshold = 80; // Increased threshold for touch screens
+      const currentTime = Date.now();
+      const minSwitchInterval = 300; // Minimum 300ms between switches
 
-      if (Math.abs(deltaX) > threshold) {
+      if (Math.abs(deltaX) > threshold && (currentTime - gestureRef.current.lastSwitchTime) > minSwitchInterval) {
         const currentIndex = systems.findIndex(s => s.id === activeSystem);
         let newIndex;
 
@@ -218,6 +228,7 @@ export default function OrbitSystems() {
           newIndex = (currentIndex + 1) % systems.length;
         }
 
+        gestureRef.current.lastSwitchTime = currentTime;
         setActiveSystem(systems[newIndex].id);
       }
     }
@@ -246,7 +257,7 @@ export default function OrbitSystems() {
       if (typeof window !== 'undefined') {
         setTimeout(() => {
           setIsYachtLoaded(true);
-        }, 3000); // Wait 3 seconds for yacht to load
+        }, 4000); // Wait 4 seconds for yacht to load
       }
     };
 
@@ -264,18 +275,32 @@ export default function OrbitSystems() {
     }
   }, [isYachtLoaded, visibleCards, systems.length]);
 
-  // Event listeners
+  // Event listeners - optimized for touch screens
   useEffect(() => {
     const canvas = gl.domElement;
 
-    canvas.addEventListener('pointerdown', handlePointerDown);
-    canvas.addEventListener('pointermove', handlePointerMove);
-    canvas.addEventListener('pointerup', handlePointerUp);
-    canvas.addEventListener('pointercancel', handlePointerUp);
+    // Touch events for mobile
+    canvas.addEventListener('touchstart', handlePointerDown, { passive: false });
+    canvas.addEventListener('touchmove', handlePointerMove, { passive: false });
+    canvas.addEventListener('touchend', handlePointerUp, { passive: false });
+    canvas.addEventListener('touchcancel', handlePointerUp, { passive: false });
+
+    // Pointer events for desktop
+    canvas.addEventListener('pointerdown', handlePointerDown, { passive: false });
+    canvas.addEventListener('pointermove', handlePointerMove, { passive: false });
+    canvas.addEventListener('pointerup', handlePointerUp, { passive: false });
+    canvas.addEventListener('pointercancel', handlePointerUp, { passive: false });
 
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
+      // Touch events
+      canvas.removeEventListener('touchstart', handlePointerDown);
+      canvas.removeEventListener('touchmove', handlePointerMove);
+      canvas.removeEventListener('touchend', handlePointerUp);
+      canvas.removeEventListener('touchcancel', handlePointerUp);
+
+      // Pointer events
       canvas.removeEventListener('pointerdown', handlePointerDown);
       canvas.removeEventListener('pointermove', handlePointerMove);
       canvas.removeEventListener('pointerup', handlePointerUp);
